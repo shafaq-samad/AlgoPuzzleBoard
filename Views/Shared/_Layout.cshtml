@@ -1,0 +1,245 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - AlgoPuzzleBoard</title>
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" integrity="sha512-DTOQO9RWCH3ppGqcWaEA1BIZOC6xxalwEsw9c2QQeAIftl+Vegovlnee1c9QX4TctnWMn13TZye+giMm8e2LwA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+</head>
+<body>
+    <div class="app-container">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <div class="sidebar-logo">
+                    AP
+                </div>
+                <h1 class="sidebar-title">Puzzle Board</h1>
+                <button class="btn btn-secondary d-md-none" style="margin-left: auto; display: none;" onclick="toggleSidebar()">✕</button>
+            </div>
+
+            <nav class="sidebar-nav">
+                <ul class="nav-list">
+                    <li class="nav-item">
+                        <a href="@Url.Action("Index", "Home")" class="nav-link @(ViewContext.RouteData.Values["Controller"]?.ToString() == "Home" ? "active" : "")">
+                            <span class="nav-icon">🏠</span>
+                            <span>Dashboard</span>
+                        </a>
+                    </li>
+
+                    <div class="nav-section-title">Modules</div>
+
+                    <li class="nav-item">
+                        <a href="@Url.Action("Index", "NQueens")" class="nav-link @(ViewContext.RouteData.Values["Controller"]?.ToString() == "NQueens" ? "active" : "")">
+                            <span class="nav-icon">♛</span>
+                            <span>N-Queens</span>
+                        </a>
+                    </li>
+
+                    <li class="nav-item">
+                        <a href="@Url.Action("Index", "KnightsTour")" class="nav-link @(ViewContext.RouteData.Values["Controller"]?.ToString() == "KnightsTour" ? "active" : "")">
+                            <span class="nav-icon">♞</span>
+                            <span>Knight's Tour</span>
+                        </a>
+                    </li>
+
+                    <li class="nav-item">
+                        <a href="@Url.Action("Index", "GraphColoring")" class="nav-link @(ViewContext.RouteData.Values["Controller"]?.ToString() == "GraphColoring" ? "active" : "")">
+                            <span class="nav-icon">🎨</span>
+                            <span>Graph Coloring</span>
+                        </a>
+                    </li>
+
+                    <li class="nav-item">
+                        <a href="@Url.Action("Index", "TSP")" class="nav-link @(ViewContext.RouteData.Values["Controller"]?.ToString() == "TSP" ? "active" : "")">
+                            <span class="nav-icon">🗺️</span>
+                            <span>TSP</span>
+                        </a>
+                    </li>
+
+                    <li class="nav-item">
+                        <a href="@Url.Action("Index", "Huffman")" class="nav-link @(ViewContext.RouteData.Values["Controller"]?.ToString() == "Huffman" ? "active" : "")">
+                            <span class="nav-icon">🌲</span>
+                            <span>Huffman Coding</span>
+                        </a>
+                    </li>
+
+                    <li class="nav-item">
+                        <a href="@Url.Action("Index", "Dijkstra")" class="nav-link @(ViewContext.RouteData.Values["Controller"]?.ToString() == "Dijkstra" ? "active" : "")">
+                            <span class="nav-icon">⚡</span>
+                            <span>Dijkstra's Algo</span>
+                        </a>
+                    </li>
+
+                    <li class="nav-item">
+                        <a href="@Url.Action("Index", "Kruskal")" class="nav-link @(ViewContext.RouteData.Values["Controller"]?.ToString() == "Kruskal" ? "active" : "")">
+                            <span class="nav-icon">🔗</span>
+                            <span>Kruskal's MST</span>
+                        </a>
+                    </li>
+
+                    <li class="nav-item">
+                        <a href="@Url.Action("Index", "Prim")" class="nav-link @(ViewContext.RouteData.Values["Controller"]?.ToString() == "Prim" ? "active" : "")">
+                            <span class="nav-icon">🌱</span>
+                            <span>Prim's MST</span>
+                        </a>
+                    </li>
+
+                    <li class="nav-item">
+                        <a href="@Url.Action("Index", "BFS")" class="nav-link @(ViewContext.RouteData.Values["Controller"]?.ToString() == "BFS" ? "active" : "")">
+                            <span class="nav-icon">🌳</span>
+                            <span>BFS Tree Traversal</span>
+                        </a>
+                    </li>
+
+                    <li class="nav-item">
+                        <a href="@Url.Action("Index", "DFS")" class="nav-link @(ViewContext.RouteData.Values["Controller"]?.ToString() == "DFS" ? "active" : "")">
+                            <span class="nav-icon">🌲</span>
+                            <span>DFS Tree Traversal</span>
+                        </a>
+                    </li>
+
+                    <li class="nav-item">
+                        <a href="@Url.Action("Index", "BFSGraph")" class="nav-link @(ViewContext.RouteData.Values["Controller"]?.ToString() == "BFSGraph" ? "active" : "")">
+                            <span class="nav-icon">🕸️</span>
+                            <span>BFS Graph Traversal</span>
+                        </a>
+                    </li>
+
+                    <li class="nav-item">
+                        <a href="@Url.Action("Index", "DFSGraph")" class="nav-link @(ViewContext.RouteData.Values["Controller"]?.ToString() == "DFSGraph" ? "active" : "")">
+                            <span class="nav-icon">🌲</span>
+                            <span>DFS Graph Traversal</span>
+                        </a>
+                    </li>
+
+                    <li class="nav-item">
+                        <a href="@Url.Action("Index", "Heap")" class="nav-link @(ViewContext.RouteData.Values["Controller"]?.ToString() == "Heap" ? "active" : "")">
+                            <span class="nav-icon">⛰️</span>
+                            <span>Max Heap</span>
+                        </a>
+                    </li>
+
+                    <li class="nav-item">
+                        <a href="@Url.Action("Index", "MinHeap")" class="nav-link @(ViewContext.RouteData.Values["Controller"]?.ToString() == "MinHeap" ? "active" : "")">
+                            <span class="nav-icon">💎</span>
+                            <span>Min Heap</span>
+                        </a>
+                    </li>
+
+                    <li class="nav-item">
+                        <a href="@Url.Action("Index", "BST")" class="nav-link @(ViewContext.RouteData.Values["Controller"]?.ToString() == "BST" ? "active" : "")">
+                            <span class="nav-icon">🌳</span>
+                            <span>BST Construction</span>
+                        </a>
+                    </li>
+
+                    <li class="nav-item">
+                        <a href="@Url.Action("Index", "BubbleSort")" class="nav-link @(ViewContext.RouteData.Values["Controller"]?.ToString() == "BubbleSort" ? "active" : "")">
+                            <span class="nav-icon">📊</span>
+                            <span>Bubble Sort</span>
+                        </a>
+                    </li>
+
+                    <li class="nav-item">
+                        <a href="@Url.Action("Index", "HeapSort")" class="nav-link @(ViewContext.RouteData.Values["Controller"]?.ToString() == "HeapSort" ? "active" : "")">
+                            <span class="nav-icon">🔺</span>
+                            <span>Heap Sort</span>
+                        </a>
+                    </li>
+
+                    <li class="nav-item">
+                        <a href="@Url.Action("Index", "MergeSort")" class="nav-link @(ViewContext.RouteData.Values["Controller"]?.ToString() == "MergeSort" ? "active" : "")">
+                            <span class="nav-icon">🔀</span>
+                            <span>Merge Sort</span>
+                        </a>
+                    </li>
+
+                    <li class="nav-item">
+                        <a href="@Url.Action("Index", "QuickSort")" class="nav-link @(ViewContext.RouteData.Values["Controller"]?.ToString() == "QuickSort" ? "active" : "")">
+                            <span class="nav-icon">⚡</span>
+                            <span>Quick Sort</span>
+                        </a>
+                    </li>
+
+                    <li class="nav-item">
+                        <a href="@Url.Action("Index", "RadixSort")" class="nav-link @(ViewContext.RouteData.Values["Controller"]?.ToString() == "RadixSort" ? "active" : "")">
+                            <span class="nav-icon">🔢</span>
+                            <span>Radix Sort</span>
+                        </a>
+                    </li>
+
+                    <li class="nav-item">
+                        <a href="@Url.Action("Index", "LinearSearch")" class="nav-link @(ViewContext.RouteData.Values["Controller"]?.ToString() == "LinearSearch" ? "active" : "")">
+                            <span class="nav-icon">🔍</span>
+                            <span>Linear Search</span>
+                        </a>
+                    </li>
+                    
+                    <li class="nav-item">
+                        <a href="@Url.Action("Index", "BinarySearch")" class="nav-link @(ViewContext.RouteData.Values["Controller"]?.ToString() == "BinarySearch" ? "active" : "")">
+                            <span class="nav-icon">🔎</span>
+                            <span>Binary Search</span>
+                        </a>
+                    </li>
+                    
+                    <li class="nav-item">
+                        <a href="@Url.Action("Index", "InterpolationSearch")" class="nav-link @(ViewContext.RouteData.Values["Controller"]?.ToString() == "InterpolationSearch" ? "active" : "")">
+                            <span class="nav-icon">🎯</span>
+                            <span>Interpolation</span>
+                        </a>
+                    </li>
+
+                </ul>
+            </nav>
+
+            <div class="sidebar-footer">
+                @if (User.Identity?.IsAuthenticated == true)
+                {
+                    <div style="margin-bottom: 1rem; padding: 0.75rem; background: rgba(255,255,255,0.05); border-radius: var(--radius-md);">
+                        <div style="font-size: 0.75rem; color: var(--color-text-muted); margin-bottom: 0.25rem;">User</div>
+                        <div style="color: white; font-weight: 500;">@User.Identity.Name</div>
+                    </div>
+                    <form asp-controller="Account" asp-action="Logout" method="post" style="margin-bottom: 1rem;">
+                        <button type="submit" class="btn btn-secondary" style="width: 100%; justify-content: center;">
+                            <span>Logout</span>
+                        </button>
+                    </form>
+                }
+                else
+                {
+                    <a href="@Url.Action("Login", "Account")" class="btn btn-primary" style="width: 100%; justify-content: center; margin-bottom: 1rem; text-decoration: none;">
+                        <span>Login / Sign Up</span>
+                    </a>
+                }
+                <div class="footer-badge">
+                    Algo Puzzle Board v1.0
+                </div>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Mobile Header Trigger -->
+            <div class="mobile-header d-md-none" style="display: none;">
+                <button class="menu-btn" onclick="toggleSidebar()">
+                    ☰
+                </button>
+                <div class="sidebar-logo">AP</div>
+            </div>
+
+            <!-- Overlay -->
+            <div class="sidebar-overlay" onclick="toggleSidebar()"></div>
+
+            <div class="container">
+                @RenderBody()
+            </div>
+        </main>
+    </div>
+
+    <script src="~/js/common.js" asp-append-version="true"></script>
+    <partial name="_ChatBot" />
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

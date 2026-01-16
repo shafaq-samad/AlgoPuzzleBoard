@@ -1,0 +1,166 @@
+<style>
+    .node-circle {
+        transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    .node-pulse {
+        animation: pulse-purple 1.5s infinite;
+    }
+    .node-compare {
+        animation: pulse-orange 1.0s infinite;
+    }
+    @@keyframes pulse-purple {
+        0% { filter: drop-shadow(0 0 2px #a855f7); transform: scale(1); }
+        50% { filter: drop-shadow(0 0 10px #a855f7); transform: scale(1.05); }
+        100% { filter: drop-shadow(0 0 2px #a855f7); transform: scale(1); }
+    }
+    @@keyframes pulse-orange {
+        0% { filter: drop-shadow(0 0 2px #f97316); transform: scale(1); }
+        50% { filter: drop-shadow(0 0 10px #f97316); transform: scale(1.1); }
+        100% { filter: drop-shadow(0 0 2px #f97316); transform: scale(1); }
+    }
+    .tree-edge {
+        transition: all 0.5s ease;
+        stroke-dasharray: 1000;
+        stroke-dashoffset: 1000;
+        animation: draw-edge 0.8s forwards ease-out;
+    }
+    @@keyframes draw-edge {
+        to { stroke-dashoffset: 0; }
+    }
+</style>
+
+<div class="space-y-6 animate-fade-in-up">
+    <div class="glass-panel algo-header">
+        <div class="header-left">
+            <h1 style="font-size: 1.875rem; font-weight: bold; background: linear-gradient(135deg, #a855f7 0%, #6366f1 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 0.25rem;">
+                BST Construction
+            </h1>
+            <p style="color: #64748b; font-size: 0.875rem;">Step-by-step Binary Search Tree (BST) insertion from an array.</p>
+        </div>
+        <div class="header-right" style="display: flex; align-items: center; gap: 1.5rem;">
+             <div style="text-align: right;">
+                <div id="timerDisplay" style="font-family: monospace; font-size: 1.5rem; font-weight: bold; color: #a855f7; line-height: 1;">00:00</div>
+                <div style="font-size: 0.875rem; color: #94a3b8;">Tree Visualizer</div>
+            </div>
+            <button id="resetBtn" class="btn btn-secondary">Reset</button>
+        </div>
+    </div>
+
+    <div class="puzzle-grid">
+        <div class="glass-panel" style="padding: 2rem; border-radius: 1rem; min-height: 500px;">
+            <div id="mapContainer" style="position: relative; width: 100%; height: auto; min-height: 450px; background: rgba(10, 25, 41, 0.5); border-radius: 0.5rem; overflow: hidden; display: flex; flex-direction: column; align-items: center; justify-content: center;">
+                <svg id="treeSvg" viewBox="0 0 800 450" style="width: 100%; height: 100%; pointer-events: auto;"></svg>
+                
+                <div id="resultOverlay" style="position: absolute; inset: 0; display: none; align-items: center; justify-content: center; pointer-events: none; z-index: 10;">
+                    <div style="background: rgba(15, 23, 42, 0.95); padding: 2.5rem; border-radius: 1rem; border: 1px solid #334155; text-align: center; backdrop-filter: blur(8px); min-width: 320px;">
+                        <h2 style="font-size: 1.75rem; font-weight: bold; color: #a855f7; margin-bottom: 1.5rem;">🌳 BST Built!</h2>
+                        <div style="display: flex; flex-direction: column; gap: 0.75rem; margin-bottom: 2rem;">
+                            <div style="color: #cbd5e1; font-size: 1.1rem;">Time: <span id="resultTime" style="color: #4ade80; font-weight: bold;">00:00</span></div>
+                            <div style="color: #cbd5e1; font-size: 1.1rem;">Score: <span id="finalScore" style="color: #a855f7; font-weight: bold;">0</span></div>
+                        </div>
+                        <button id="closeResultBtn" class="btn btn-primary" style="pointer-events: auto; background: #a855f7; border: none; color: white;">Close</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Current Value Insertion View -->
+             <div id="insertionView" style="margin-top: 1.5rem; display: none; text-align: center;">
+                <span style="color: #94a3b8; font-size: 0.875rem;">Currently Inserting: </span>
+                <span id="insertingValue" style="color: #f97316; font-size: 1.25rem; font-weight: bold; margin-left: 0.5rem;">-</span>
+             </div>
+
+            <!-- Array View -->
+            <div style="margin-top: 1.5rem; padding: 1.5rem; background: rgba(15, 23, 42, 0.4); border: 1px solid #1e293b; border-radius: 0.75rem;">
+                <h4 style="color: #94a3b8; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 1rem;">Original Array</h4>
+                <div id="arrayContainer" style="display: flex; gap: 0.5rem; flex-wrap: wrap; justify-content: center;">
+                    <span style="color: #64748b; font-style: italic;">Generate an array to begin</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="glass-panel" style="padding: 1.5rem; border-radius: 1rem; display: flex; flex-direction: column; gap: 1.5rem;">
+            <div id="inputSection">
+                <h3 style="font-size: 1.125rem; font-weight: 600; color: white; margin-bottom: 1rem;">BST Input</h3>
+                
+                <div style="display: flex; gap: 0.5rem; margin-bottom: 1.5rem;">
+                    <button id="tabRandom" class="btn btn-sm btn-primary" style="background: #a855f7; color: white; border: none;">Random</button>
+                    <button id="tabManual" class="btn btn-sm btn-secondary">Manual</button>
+                </div>
+
+                <div id="randomInputGroup">
+                    <label style="display: block; color: #94a3b8; font-size: 0.875rem; margin-bottom: 0.5rem;">Number of Nodes (5-12)</label>
+                    <input type="number" id="nodeCountInput" value="8" min="3" max="15" class="form-control" style="width: 100%; background: #1e293b; border: 1px solid #334155; color: white; padding: 0.5rem; border-radius: 0.25rem; margin-bottom: 1.5rem;">
+                    <button id="generateBtn" class="btn btn-primary" style="width: 100%; background: #a855f7; color: white; border: none;">Generate Array</button>
+                </div>
+
+                <div id="manualInputGroup" style="display: none;">
+                    <label style="display: block; color: #94a3b8; font-size: 0.875rem; margin-bottom: 0.5rem;">Enter unique numbers</label>
+                    <textarea id="manualArrayInput" rows="3" class="form-control" style="width: 100%; background: #1e293b; border: 1px solid #334155; color: white; padding: 0.5rem; border-radius: 0.25rem; margin-bottom: 1.5rem; font-family: monospace; resize: none;">50, 30, 70, 20, 40, 60, 80</textarea>
+                    <button id="generateManualBtn" class="btn btn-primary" style="width: 100%; background: #a855f7; color: white; border: none;">Load Array</button>
+                </div>
+            </div>
+
+            <div id="actionSection" style="display: none; flex-direction: column; gap: 1rem;">
+                <h3 style="font-size: 1.125rem; font-weight: 600; color: white; margin-bottom: 0.5rem;">Controls</h3>
+                <div style="display: grid; grid-template-columns: 1fr; gap: 1rem; margin-bottom: 1.5rem;">
+                    <button id="solveBtn" class="btn btn-primary" style="background: linear-gradient(135deg, #a855f7 0%, #6366f1 100%); border: none; color: white;">Build BST (Auto)</button>
+                </div>
+                 <div id="stepControls" style="display: none; gap: 0.5rem; justify-content: center;">
+                     <button id="prevBtn" class="btn btn-sm btn-secondary" style="border-color: #a855f7; color: #a855f7;">&lt;</button>
+                     <button id="pauseBtn" class="btn btn-sm btn-secondary" style="border-color: #a855f7; color: #a855f7;">||</button>
+                     <button id="nextBtn" class="btn btn-sm btn-secondary" style="border-color: #a855f7; color: #a855f7;">&gt;</button>
+                 </div>
+            </div>
+
+            <div style="border-top: 1px solid rgba(255, 255, 255, 0.1); padding-top: 1rem;">
+                 <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.75rem;">
+                    <h3 style="font-size: 1.125rem; font-weight: 600; color: white; margin: 0;">Status</h3>
+                    <div style="font-size: 0.875rem; color: #a855f7;">Score: <span id="currentScoreDisplay">0</span></div>
+                 </div>
+                 <div id="statusText" style="margin-bottom: 1rem; font-size: 0.875rem; color: #cbd5e1; min-height: 4.5rem; background: rgba(0,0,0,0.2); padding: 0.75rem; border-radius: 0.5rem; line-height: 1.5;">Ready to build BST.</div>
+            </div>
+
+            <div style="border-top: 1px solid rgba(255, 255, 255, 0.1); padding-top: 1.5rem; margin-top: 1rem;">
+                <h3 style="font-size: 1.125rem; font-weight: bold; color: white; margin-bottom: 1.25rem;">Complexity Analysis</h3>
+                
+                <div style="margin-bottom: 1.5rem;">
+                    <p style="color: #94a3b8; font-size: 0.75rem; margin-bottom: 0.5rem; font-weight: 500;">Time Complexity:</p>
+                    <div style="background: rgba(168, 85, 247, 0.1); border: 1px solid rgba(168, 85, 247, 0.3); color: #a855f7; padding: 0.4rem 0.75rem; border-radius: 0.375rem; display: inline-block; font-family: 'JetBrains Mono', monospace; font-size: 0.85rem; margin-bottom: 1rem;">
+                        O(log N)
+                    </div>
+
+                    <p style="color: #94a3b8; font-size: 0.75rem; margin-bottom: 0.5rem; font-weight: 500;">Space Complexity:</p>
+                    <div style="background: rgba(244, 63, 94, 0.1); border: 1px solid rgba(244, 63, 94, 0.3); color: #f43f5e; padding: 0.4rem 0.75rem; border-radius: 0.375rem; display: inline-block; font-family: 'JetBrains Mono', monospace; font-size: 0.85rem;">
+                        O(H)
+                    </div>
+                </div>
+
+                <h3 style="font-size: 1.125rem; font-weight: bold; color: white; margin-bottom: 0.75rem;">How it works</h3>
+                <p style="color: #94a3b8; font-size: 0.875rem; margin-bottom: 1.5rem; line-height: 1.6;">
+                    BST construction builds the tree by recursively or iteratively comparing values. New nodes are placed as leaves where the BST property (Left &lt; Parent &lt; Right) holds.
+                </p>
+
+                <div style="background: #0f172a; padding: 1.5rem; border-radius: 0.5rem; border: 1px solid #1e293b; font-family: 'JetBrains Mono', monospace; font-size: 0.85rem; line-height: 1.7; overflow-x: auto;">
+                    <div style="color: #22d3ee; margin-bottom: 4px;">function <span style="color: #4ade80;">BST_Insert</span>(root, val):</div>
+                    <div style="padding-left: 1rem;">
+                        <span style="color: #4ade80;">node</span> = <span style="color: #4ade80;">root</span><br><br>
+                        
+                        <span style="color: #f472b6;">while</span> node != <span style="color: #a855f7;">null</span>:<br>
+                        &nbsp;&nbsp;<span style="color: #f472b6;">if</span> val < node.value:<br>
+                        &nbsp;&nbsp;&nbsp;&nbsp;<span style="color: #f472b6;">if</span> node.left == <span style="color: #a855f7;">null</span>:<br>
+                        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;node.left = <span style="color: #22d3ee;">new Node</span>(val)<br>
+                        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color: #f472b6;">return</span><br>
+                        &nbsp;&nbsp;&nbsp;&nbsp;node = node.left<br>
+                        &nbsp;&nbsp;<span style="color: #f472b6;">else</span>:<br>
+                        &nbsp;&nbsp;&nbsp;&nbsp;<span style="color: #f472b6;">if</span> node.right == <span style="color: #a855f7;">null</span>:<br>
+                        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;node.right = <span style="color: #22d3ee;">new Node</span>(val)<br>
+                        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color: #f472b6;">return</span><br>
+                        &nbsp;&nbsp;&nbsp;&nbsp;node = node.right
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts { <script src="~/js/bst.js"></script> }

@@ -1,0 +1,123 @@
+@model AlgoPuzzleBoard.MVC.Models.RegisterViewModel
+
+@{
+    ViewData["Title"] = "Register";
+}
+
+<style>
+    .premium-glass-card {
+        width: 100%;
+        max-width: 400px;
+        padding: 2.5rem;
+        border-radius: 20px;
+        background: rgba(15, 23, 42, 0.6);
+        backdrop-filter: blur(20px);
+        -webkit-backdrop-filter: blur(20px);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-top: 1px solid rgba(255, 255, 255, 0.2);
+        box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5),
+                    inset 0 0 0 1px rgba(255, 255, 255, 0.05);
+        position: relative;
+        overflow: hidden;
+    }
+
+    /* Glow effect */
+    .premium-glass-card::before {
+        content: '';
+        position: absolute;
+        top: -50%;
+        left: -50%;
+        width: 200%;
+        height: 200%;
+        background: radial-gradient(circle, rgba(16, 185, 129, 0.15) 0%, transparent 70%);
+        pointer-events: none;
+    }
+    
+    @@media (max-width: 480px) {
+        .premium-glass-card {
+            padding: 1.5rem;
+        }
+    }
+    
+    .glass-input-premium {
+        width: 100%;
+        padding: 0.875rem 1rem;
+        background: rgba(0, 0, 0, 0.2);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 8px;
+        color: white;
+        font-size: 0.95rem;
+        outline: none;
+        transition: all 0.3s;
+    }
+
+    .glass-input-premium:focus {
+        border-color: #10b981;
+        box-shadow: 0 0 0 2px rgba(16, 185, 129, 0.2);
+        background: rgba(0, 0, 0, 0.3);
+    }
+    
+    .btn-register-gradient {
+        width: 100%;
+        padding: 0.875rem;
+        border-radius: 8px;
+        background: linear-gradient(135deg, #10b981 0%, #3b82f6 100%);
+        color: white;
+        font-weight: 600;
+        font-size: 1rem;
+        border: none;
+        cursor: pointer;
+        transition: transform 0.2s, box-shadow 0.2s;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        margin-top: 1rem;
+        box-shadow: 0 4px 15px rgba(16, 185, 129, 0.3);
+    }
+
+    .btn-register-gradient:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 20px rgba(16, 185, 129, 0.4);
+    }
+</style>
+
+<div style="display: flex; align-items: center; justify-content: center; min-height: 85vh; width: 100%; position: relative;">
+    <div class="premium-glass-card">
+        <div class="text-center" style="position: relative; z-index: 1; margin-bottom: 2rem;">
+            <div style="font-size: 2.5rem; margin-bottom: 1rem; text-shadow: 0 0 20px rgba(16, 185, 129, 0.5);">📝</div>
+            <h2 style="color: white; margin-bottom: 0.5rem; font-weight: bold; font-size: 1.75rem;">Create Account</h2>
+            <p style="color: #94a3b8; font-size: 0.9rem;">Join to save your progress</p>
+        </div>
+
+        <form asp-action="Register" style="position: relative; z-index: 1;">
+            <div asp-validation-summary="ModelOnly" class="text-danger" style="color: #ef4444; margin-bottom: 1rem; font-size: 0.875rem; text-align: center;"></div>
+            
+            <div style="margin-bottom: 1.25rem;">
+                <label asp-for="Username" style="display: block; margin-bottom: 0.5rem; color: #e2e8f0; font-size: 0.875rem;">Username</label>
+                <input asp-for="Username" class="glass-input-premium" placeholder="Choose a username" />
+                <span asp-validation-for="Username" style="color: #ef4444; font-size: 0.75rem; display: block; margin-top: 0.25rem;"></span>
+            </div>
+
+            <div style="margin-bottom: 1.25rem;">
+                <label asp-for="Password" style="display: block; margin-bottom: 0.5rem; color: #e2e8f0; font-size: 0.875rem;">Password</label>
+                <input asp-for="Password" type="password" class="glass-input-premium" placeholder="Create a password" />
+                <span asp-validation-for="Password" style="color: #ef4444; font-size: 0.75rem; display: block; margin-top: 0.25rem;"></span>
+            </div>
+
+            <div style="margin-bottom: 1.5rem;">
+                <label asp-for="ConfirmPassword" style="display: block; margin-bottom: 0.5rem; color: #e2e8f0; font-size: 0.875rem;">Confirm Password</label>
+                <input asp-for="ConfirmPassword" type="password" class="glass-input-premium" placeholder="Repeat password" />
+                <span asp-validation-for="ConfirmPassword" style="color: #ef4444; font-size: 0.75rem; display: block; margin-top: 0.25rem;"></span>
+            </div>
+
+            <button type="submit" class="btn-register-gradient">Sign Up</button>
+        </form>
+
+        <div class="text-center" style="margin-top: 1.5rem; position: relative; z-index: 1;">
+            <p style="color: #64748b; font-size: 0.875rem;">Already have an account? <a asp-action="Login" style="color: #60a5fa; text-decoration: none; font-weight: 600;">Login</a></p>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

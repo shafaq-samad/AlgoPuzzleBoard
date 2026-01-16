@@ -1,0 +1,271 @@
+<style>
+    #chatbot-widget {
+        position: fixed;
+        bottom: 2rem;
+        right: 2rem;
+        z-index: 9999;
+        font-family: 'Inter', sans-serif;
+    }
+
+    #chatbot-toggle {
+        width: 60px;
+        height: 60px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, #6366f1, #8b5cf6);
+        box-shadow: 0 4px 12px rgba(99, 102, 241, 0.4);
+        border: none;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: transform 0.2s, box-shadow 0.2s;
+    }
+
+    #chatbot-toggle:hover {
+        transform: scale(1.05);
+        box-shadow: 0 6px 16px rgba(99, 102, 241, 0.5);
+    }
+    
+    #chatbot-toggle i {
+        color: white;
+        font-size: 1.5rem;
+    }
+
+    #chatbot-window {
+        position: absolute;
+        bottom: 80px;
+        right: 0;
+        width: 350px;
+        height: 500px;
+        background: #0f172a;
+        border-radius: 1rem;
+        border: 1px solid #334155;
+        box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.5);
+        display: none;
+        flex-direction: column;
+        overflow: hidden;
+        animation: slide-up 0.3s ease-out;
+    }
+
+    @@keyframes slide-up {
+        from { opacity: 0; transform: translateY(20px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+
+    .chat-header {
+        background: linear-gradient(135deg, #6366f1, #8b5cf6);
+        padding: 1rem;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        color: white;
+    }
+
+    .chat-header h4 {
+        margin: 0;
+        font-size: 1rem;
+        font-weight: 600;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .chat-messages {
+        flex: 1;
+        padding: 1rem;
+        overflow-y: auto;
+        display: flex;
+        flex-direction: column;
+        gap: 0.75rem;
+        scrollbar-width: thin;
+        scrollbar-color: #334155 #0f172a;
+    }
+
+    .chat-msg {
+        max-width: 80%;
+        padding: 0.75rem;
+        border-radius: 0.75rem;
+        font-size: 0.9rem;
+        line-height: 1.4;
+    }
+
+    .bot-msg {
+        align-self: flex-start;
+        background: #1e293b;
+        color: #e2e8f0;
+        border-bottom-left-radius: 2px;
+    }
+
+    .user-msg {
+        align-self: flex-end;
+        background: #6366f1;
+        color: white;
+        border-bottom-right-radius: 2px;
+    }
+
+    .chat-input-area {
+        padding: 1rem;
+        border-top: 1px solid #334155;
+        background: #1e293b;
+        display: flex;
+        gap: 0.5rem;
+    }
+
+    #chat-input {
+        flex: 1;
+        background: #0f172a;
+        border: 1px solid #334155;
+        border-radius: 1.5rem;
+        color: white;
+        padding: 0.5rem 1rem;
+        font-size: 0.9rem;
+        outline: none;
+    }
+    
+    #chat-input:focus {
+        border-color: #6366f1;
+    }
+
+    #chat-send {
+        background: #6366f1;
+        border: none;
+        width: 36px;
+        height: 36px;
+        border-radius: 50%;
+        color: white;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+    
+    #chat-send:hover {
+        background: #4f46e5;
+    }
+
+    .typing-indicator span {
+        display: inline-block;
+        width: 6px;
+        height: 6px;
+        background: #94a3b8;
+        border-radius: 50%;
+        animation: chat-bounce 1.4s infinite ease-in-out both;
+        margin: 0 1px;
+    }
+    
+    .typing-indicator span:nth-child(1) { animation-delay: -0.32s; }
+    .typing-indicator span:nth-child(2) { animation-delay: -0.16s; }
+
+    @@keyframes chat-bounce {
+        0%, 80%, 100% { transform: scale(0); }
+        40% { transform: scale(1); }
+    }
+</style>
+
+<div id="chatbot-widget">
+    <div id="chatbot-window">
+        <div class="chat-header">
+            <h4><i class="fas fa-robot"></i> Algo Guide</h4>
+            <button id="chatbot-close" style="background: none; border: none; color: white; cursor: pointer;"><i class="fas fa-times"></i></button>
+        </div>
+        <div class="chat-messages" id="chat-messages">
+            <div class="chat-msg bot-msg">
+                Hi! 👋 I'm your Algo Assistant. Ask me anything about the algorithms or how to use this app!
+            </div>
+        </div>
+        <div class="chat-input-area">
+            <input type="text" id="chat-input" placeholder="Ask a question..." autocomplete="off">
+            <button id="chat-send"><i class="fas fa-paper-plane"></i></button>
+        </div>
+    </div>
+    <button id="chatbot-toggle">
+        <i class="fas fa-comment-alt"></i>
+    </button>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const toggleBtn = document.getElementById('chatbot-toggle');
+        const closeBtn = document.getElementById('chatbot-close');
+        const windowEl = document.getElementById('chatbot-window');
+        const inputEl = document.getElementById('chat-input');
+        const sendBtn = document.getElementById('chat-send');
+        const messagesEl = document.getElementById('chat-messages');
+
+        toggleBtn.addEventListener('click', () => {
+            const isHidden = windowEl.style.display === 'none' || windowEl.style.display === '';
+            windowEl.style.display = isHidden ? 'flex' : 'none';
+        });
+
+        closeBtn.addEventListener('click', () => {
+            windowEl.style.display = 'none';
+        });
+
+        const sendMessage = async () => {
+            const text = inputEl.value.trim();
+            if (!text) return;
+
+            appendMessage(text, 'user');
+            inputEl.value = '';
+
+            // Show typing
+            const typingId = showTyping();
+            
+            // Get current page context from URL
+            const path = window.location.pathname;
+            let context = "Home";
+            if (path.includes("BST")) context = "BST";
+            else if (path.includes("MinHeap")) context = "MinHeap";
+            else if (path.includes("Heap")) context = "Heap";
+            else if (path.includes("BFS")) context = "BFS";
+            else if (path.includes("DFS")) context = "DFS";
+            else if (path.includes("Sort")) context = path.split('/')[1]; // Capture sort types
+
+            try {
+                const res = await fetch('/Chat/SendMessage', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ message: text, currentContext: context })
+                });
+                const data = await res.json();
+                removeTyping(typingId);
+                appendMessage(data.response, 'bot');
+            } catch (err) {
+                removeTyping(typingId);
+                appendMessage("Sorry, I'm having trouble connecting right now.", 'bot');
+            }
+        };
+
+        sendBtn.addEventListener('click', sendMessage);
+        inputEl.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') sendMessage();
+        });
+
+        function appendMessage(text, sender) {
+            const div = document.createElement('div');
+            div.className = `chat-msg ${sender}-msg`;
+            
+            // Allow basic markdown bolding
+            div.innerHTML = text.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>').replace(/\n/g, '<br>');
+            
+            messagesEl.appendChild(div);
+            messagesEl.scrollTop = messagesEl.scrollHeight;
+        }
+
+        function showTyping() {
+            const id = 'typing-' + Date.now();
+            const div = document.createElement('div');
+            div.className = 'chat-msg bot-msg typing-indicator';
+            div.id = id;
+            div.innerHTML = '<span></span><span></span><span></span>';
+            messagesEl.appendChild(div);
+            messagesEl.scrollTop = messagesEl.scrollHeight;
+            return id;
+        }
+
+        function removeTyping(id) {
+            const el = document.getElementById(id);
+            if (el) el.remove();
+        }
+    });
+</script>

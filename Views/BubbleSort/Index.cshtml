@@ -1,0 +1,306 @@
+@{
+    ViewData["Title"] = "Bubble Sort Visualizer";
+}
+
+<style>
+    .array-container {
+        display: flex;
+        align-items: flex-end;
+        justify-content: center;
+        gap: 4px;
+        min-height: 300px;
+        padding: 2rem;
+        position: relative;
+        overflow-x: auto;
+        width: 100%;
+        box-sizing: border-box;
+    }
+    
+    .array-bar {
+        flex: 1;
+        max-width: 60px;
+        background: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%);
+        border-radius: 4px 4px 0 0;
+        position: relative;
+        transition: all 0.3s ease;
+        display: flex;
+        align-items: flex-end;
+        justify-content: center;
+        padding-bottom: 0.5rem;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+    }
+    
+    .array-bar.comparing {
+        background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%);
+        transform: translateY(-10px);
+        box-shadow: 0 8px 16px rgba(251, 191, 36, 0.5);
+    }
+    
+    .array-bar.swapping {
+        background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+        animation: swap 0.5s ease;
+        box-shadow: 0 8px 16px rgba(239, 68, 68, 0.5);
+    }
+    
+    .array-bar.sorted {
+        background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+        box-shadow: 0 8px 16px rgba(16, 185, 129, 0.5);
+    }
+    
+    .array-bar-value {
+        color: white;
+        font-weight: bold;
+        font-size: 0.875rem;
+    }
+    
+    @@keyframes swap {
+        0%, 100% { transform: translateY(0); }
+        50% { transform: translateY(-20px); }
+    }
+    
+    .input-section {
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+        margin-bottom: 1.5rem;
+    }
+    
+    .complexity-badge {
+        display: inline-block;
+        padding: 0.5rem 1rem;
+        border-radius: 0.5rem;
+        font-size: 0.875rem;
+        font-weight: 600;
+        background: rgba(139, 92, 246, 0.15);
+        border: 1px solid #8b5cf6;
+        color: #c084fc;
+    }
+</style>
+
+<div class="space-y-6 animate-fade-in-up">
+    <!-- Header -->
+    <div class="glass-panel algo-header" style="flex-wrap: wrap; gap: 1rem;">
+        <div class="header-left" style="min-width: 200px;">
+            <h1 style="font-size: 1.875rem; font-weight: bold; background: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; margin-bottom: 0.25rem;">
+                Bubble Sort Visualizer
+            </h1>
+            <p style="color: #64748b; font-size: 0.875rem;">Sorting Algorithm</p>
+        </div>
+        <div class="header-right" style="flex-wrap: wrap; gap: 0.5rem; justify-content: flex-start;">
+            <div style="display: flex; flex-direction: column; align-items: end; margin-right: 1rem; width: 100%; align-items: flex-start; margin-bottom: 0.5rem;">
+                <span id="timerDisplay" style="font-family: monospace; font-size: 1.25rem; color: #facc15; font-weight: bold;">00:00</span>
+                <span id="scoreDisplay" style="font-size: 0.875rem; color: #94a3b8;">Score: 0</span>
+            </div>
+            <button id="hintBtn" class="btn btn-secondary" style="border-color: #facc15; color: #facc15; flex: 1; min-width: 80px;">
+                <span style="margin-right: 0.5rem">💡</span>Hint
+            </button>
+            <button id="resetBtn" class="btn btn-secondary" style="flex: 1; min-width: 80px;">
+                Reset
+            </button>
+            <button id="autoSolveBtn" class="btn btn-primary" style="background: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%); flex: 1; min-width: 100px;">
+                Auto Solve
+            </button>
+        </div>
+    </div>
+
+    <div class="puzzle-grid">
+        <!-- Visualization Panel -->
+        <div class="glass-panel" style="padding: 2rem; border-radius: 1rem;">
+            <!-- Input Section -->
+            <div class="input-section">
+                <div>
+                    <label for="arrayInput" style="display: block; color: #cbd5e1; font-size: 0.875rem; margin-bottom: 0.5rem; font-weight: 600;">
+                        Enter Array Elements (comma-separated, 2-20 numbers):
+                    </label>
+                    
+<style>
+    /* ... existing styles ... */
+    
+    .sort-controls-wrapper {
+        display: flex;
+        gap: 1rem;
+        align-items: center;
+        flex-wrap: wrap;
+    }
+    
+    .sort-input {
+        flex: 1;
+        min-width: 200px;
+        padding: 0.75rem;
+        background: rgba(15, 23, 42, 0.6);
+        border: 1px solid #334155;
+        border-radius: 0.5rem;
+        color: white;
+        font-size: 0.875rem;
+    }
+    
+    .sort-order-box {
+        display: flex;
+        gap: 1.5rem;
+        align-items: center;
+        padding: 0.75rem 1.5rem;
+        background: rgba(0,0,0,0.2);
+        border-radius: 0.5rem;
+        border: 1px solid #334155;
+        white-space: nowrap;
+    }
+
+    @@media (max-width: 768px) {
+        .sort-controls-wrapper {
+            flex-direction: column;
+            align-items: stretch;
+        }
+        
+        .sort-order-box {
+            justify-content: space-between;
+        }
+    }
+</style>
+
+<!-- ... inside the HTML ... -->
+
+                    <!-- Array Input with Order Selection -->
+                    <div class="sort-controls-wrapper">
+                        <input 
+                            type="text" 
+                            id="arrayInput" 
+                            class="sort-input"
+                            placeholder="e.g., 64, 34, 25, 12, 22, 11, 90"
+                        />
+                        
+                        <!-- Sort Order Selection -->
+                        <div class="sort-order-box">
+                            <label style="color: #cbd5e1; font-size: 0.875rem; font-weight: 600;">Order:</label>
+                            <label style="display: flex; align-items: center; gap: 0.5rem; color: #cbd5e1; font-size: 0.875rem; cursor: pointer;">
+                                <input type="radio" name="sortOrder" value="ascending" checked style="cursor: pointer; accent-color: #3b82f6; width: 16px; height: 16px;" />
+                                <span>Asc ↑</span>
+                            </label>
+                            <label style="display: flex; align-items: center; gap: 0.5rem; color: #cbd5e1; font-size: 0.875rem; cursor: pointer;">
+                                <input type="radio" name="sortOrder" value="descending" style="cursor: pointer; accent-color: #3b82f6; width: 16px; height: 16px;" />
+                                <span>Desc ↓</span>
+                            </label>
+                        </div>
+                    </div>
+                    
+                    <!-- Buttons on Next Line -->
+                    <div style="display: flex; gap: 0.5rem; margin-top: 0.75rem;">
+                        <button id="generateBtn" class="btn btn-secondary">
+                            Generate Random
+                        </button>
+                        <button id="startBtn" class="btn btn-primary" style="background: linear-gradient(135deg, #10b981 0%, #059669 100%);">
+                            Start Sorting
+                        </button>
+                    </div>
+                    
+                    <p id="inputError" style="color: #ef4444; font-size: 0.75rem; margin-top: 0.5rem; display: none;"></p>
+                </div>
+            </div>
+
+            <!-- Array Visualization -->
+            <div id="arrayContainer" class="array-container">
+                <p style="color: #94a3b8; text-align: center;">Enter an array to begin visualization</p>
+            </div>
+
+            <!-- Step Controls -->
+            <div id="stepControls" style="display: none; gap: 0.5rem; justify-content: center; margin-top: 1rem; flex-wrap: wrap;">
+                <button id="prevStepBtn" class="btn btn-sm btn-secondary" style="padding: 0.5rem 1rem; flex: 1; min-width: 100px;">
+                    <span style="font-size: 1.25rem;">&larr;</span> Previous
+                </button>
+                <button id="pauseBtn" class="btn btn-sm btn-secondary" style="padding: 0.5rem 1rem; flex: 1; min-width: 100px;">
+                    <span style="font-size: 1.25rem;">||</span> Pause
+                </button>
+                <button id="nextStepBtn" class="btn btn-sm btn-secondary" style="padding: 0.5rem 1rem; flex: 1; min-width: 100px;">
+                    Next <span style="font-size: 1.25rem;">&rarr;</span>
+                </button>
+            </div>
+
+            <!-- Step Description -->
+            <div id="stepDescription" style="margin-top: 1rem; padding: 1rem; background: rgba(0,0,0,0.3); border-radius: 0.5rem; border-left: 4px solid #3b82f6; min-height: 3rem;">
+                <p style="color: #cbd5e1; font-size: 0.875rem; margin: 0;">
+                    Enter your array elements and click "Start Sorting" to begin visualization.
+                </p>
+            </div>
+        </div>
+
+        <!-- Stats Panel -->
+        <div class="glass-panel" style="padding: 1.5rem; border-radius: 1rem; display: flex; flex-direction: column; gap: 1.5rem;">
+            <div>
+                <h3 style="font-size: 1.125rem; font-weight: 600; color: white; margin-bottom: 1rem;">Algorithm Stats</h3>
+                <div style="display: flex; flex-direction: column; gap: 0.75rem;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; font-size: 0.875rem; color: #94a3b8;">
+                        <span>Array Size:</span>
+                        <span id="arraySize" style="color: #60a5fa; font-weight: 600;">0</span>
+                    </div>
+                    <div style="display: flex; justify-content: space-between; align-items: center; font-size: 0.875rem; color: #94a3b8;">
+                        <span>Comparisons:</span>
+                        <span id="comparisons" style="color: #fbbf24; font-weight: 600;">0</span>
+                    </div>
+                    <div style="display: flex; justify-content: space-between; align-items: center; font-size: 0.875rem; color: #94a3b8;">
+                        <span>Swaps:</span>
+                        <span id="swaps" style="color: #f472b6; font-weight: 600;">0</span>
+                    </div>
+                    <div style="display: flex; justify-content: space-between; align-items: center; font-size: 0.875rem; color: #94a3b8;">
+                        <span>Current Pass:</span>
+                        <span id="currentPass" style="color: #a78bfa; font-weight: 600;">0</span>
+                    </div>
+                </div>
+            </div>
+
+            <div style="border-top: 1px solid rgba(255, 255, 255, 0.1); padding-top: 1rem;">
+                <h3 style="font-size: 1.125rem; font-weight: 600; color: white; margin-bottom: 0.75rem;">Complexity Analysis</h3>
+                <div style="display: flex; flex-direction: column; gap: 0.75rem;">
+                    <div>
+                        <p style="color: #94a3b8; font-size: 0.75rem; margin-bottom: 0.25rem;">Time Complexity:</p>
+                        <span class="complexity-badge">O(n²)</span>
+                    </div>
+                    <div>
+                        <p style="color: #94a3b8; font-size: 0.75rem; margin-bottom: 0.25rem;">Space Complexity:</p>
+                        <span class="complexity-badge" style="background: rgba(16, 185, 129, 0.15); border-color: #10b981; color: #34d399;">O(1)</span>
+                    </div>
+                </div>
+            </div>
+
+            <div style="border-top: 1px solid rgba(255, 255, 255, 0.1); padding-top: 1rem;">
+                <h3 style="font-size: 1.125rem; font-weight: 600; color: white; margin-bottom: 0.75rem;">How it works</h3>
+                <p style="font-size: 0.875rem; color: #94a3b8; line-height: 1.6; margin-bottom: 0.75rem;">
+                    Bubble Sort repeatedly steps through the list, compares adjacent elements and 
+                    <span style="color: #f87171; font-weight: 600;">swaps</span> them if they're in the wrong order.
+                </p>
+                <div style="background: rgba(0, 0, 0, 0.3); padding: 0.75rem; border-radius: 0.5rem; font-family: 'Courier New', monospace; font-size: 0.75rem; color: #34d399; line-height: 1.6;">
+                    for i = 0 to n-1<br/>
+                    &nbsp;&nbsp;for j = 0 to n-i-1<br/>
+                    &nbsp;&nbsp;&nbsp;&nbsp;if arr[j] > arr[j+1]<br/>
+                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;swap(arr[j], arr[j+1])
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Result Overlay -->
+<div id="resultOverlay" style="position: fixed; inset: 0; display: none; align-items: center; justify-content: center; background: rgba(0, 0, 0, 0.7); z-index: 50; backdrop-filter: blur(4px);">
+    <div style="background: rgba(15, 23, 42, 0.95); padding: 2rem; border-radius: 1rem; border: 2px solid #3b82f6; text-align: center; max-width: 400px;">
+        <h2 style="font-size: 1.875rem; font-weight: bold; color: #60a5fa; margin-bottom: 1rem;">🎉 Sorting Complete!</h2>
+        <div style="display: flex; flex-direction: column; gap: 0.75rem; margin-bottom: 1.5rem;">
+            <p style="color: #cbd5e1; font-size: 1rem;">
+                Total Comparisons: <span id="resultComparisons" style="color: #fbbf24; font-weight: bold;">0</span>
+            </p>
+            <p style="color: #cbd5e1; font-size: 1rem;">
+                Total Swaps: <span id="resultSwaps" style="color: #f472b6; font-weight: bold;">0</span>
+            </p>
+            <p style="color: #cbd5e1; font-size: 1rem;">
+                Time Taken: <span id="resultTime" style="color: #34d399; font-weight: bold;">00:00</span>
+            </p>
+            <p style="color: #cbd5e1; font-size: 1rem;">
+                Score: <span id="resultScore" style="color: #c084fc; font-weight: bold;">0</span>
+            </p>
+        </div>
+        <button id="closeResultBtn" class="btn btn-primary" style="background: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%);">
+            Close
+        </button>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="~/js/bubblesort.js"></script>
+}

@@ -1,0 +1,172 @@
+@{
+    ViewData["Title"] = "Dijkstra's Algorithm";
+}
+
+<div class="space-y-6 animate-fade-in-up">
+    <!-- Header -->
+    <div class="glass-panel algo-header">
+        <div class="header-left">
+            <h1 style="font-size: 1.875rem; font-weight: bold; background: linear-gradient(135deg, #10b981 0%, #3b82f6 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 0.25rem;">
+                Dijkstra's Algorithm
+            </h1>
+            <p style="color: #64748b; font-size: 0.875rem;">Find the shortest path between nodes</p>
+        </div>
+        <div class="header-right">
+            <div style="display: flex; flex-direction: column; align-items: end; margin-right: 1rem;">
+                <span id="timerDisplay" style="font-family: monospace; font-size: 1.25rem; color: #facc15; font-weight: bold;">00:00</span>
+                <span id="scoreDisplay" style="font-size: 0.875rem; color: #94a3b8;">Score: 0</span>
+            </div>
+            <button id="resetBtn" class="btn btn-secondary">Reset</button>
+        </div>
+    </div>
+
+    <div class="puzzle-grid">
+        <!-- Map Area -->
+        <div class="glass-panel" style="padding: 2rem; border-radius: 1rem; min-height: 500px;">
+            <div id="mapContainer" style="position: relative; width: 100%; height: auto; min-height: 500px; background: rgba(10, 25, 41, 0.5); border-radius: 0.5rem; cursor: crosshair; overflow: hidden;">
+                <!-- Background Grid -->
+                <div style="position: absolute; inset: 0; width: 100%; height: 100%; display: grid; grid-template-columns: repeat(10, 1fr); grid-template-rows: repeat(10, 1fr); pointer-events: none; opacity: 0.2;">
+                    @for(int i = 0; i < 100; i++)
+                    {
+                        <div style="border: 1px solid #334155;"></div>
+                    }
+                </div>
+
+                <svg id="dijkstraSvg" viewBox="0 0 800 600" style="position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: auto;"></svg>
+
+                <div id="resultOverlay" style="position: absolute; inset: 0; display: none; align-items: center; justify-content: center; pointer-events: none; z-index: 10;">
+                    <div style="background: rgba(15, 23, 42, 0.9); padding: 1.5rem; border-radius: 1rem; border: 1px solid #3b82f6; text-align: center; backdrop-filter: blur(4px);">
+                        <h2 style="font-size: 1.5rem; font-weight: bold; color: #fbbf24; margin-bottom: 0.5rem;">Path Found!</h2>
+                        <p style="color: #cbd5e1; font-size: 1.125rem; margin-bottom: 1rem;">Total Distance: <span id="resultDistance" style="color: #60a5fa; font-weight: bold;">0</span></p>
+                        <button id="closeResultBtn" class="btn btn-sm btn-primary" style="pointer-events: auto;">Close</button>
+                    </div>
+                </div>
+
+                <div id="overlayMessage" style="position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; pointer-events: none;">
+                    <div style="color: #94a3b8; font-size: 0.875rem; background: rgba(0,0,0,0.6); padding: 1rem; border-radius: 0.5rem;">
+                        Generate a graph to begin
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Controls -->
+        <div class="glass-panel" style="padding: 1.5rem; border-radius: 1rem; display: flex; flex-direction: column; gap: 1.5rem;">
+            
+            <!-- Input Section -->
+            <div id="inputSection">
+                <h3 style="font-size: 1.125rem; font-weight: 600; color: white; margin-bottom: 1rem;">Graph Generation</h3>
+                
+                <div style="display: flex; gap: 0.5rem; margin-bottom: 1rem;">
+                    <button id="tabRandom" class="btn btn-sm btn-primary" style="flex: 1;">Random</button>
+                    <button id="tabManual" class="btn btn-sm btn-secondary" style="flex: 1;">Manual</button>
+                </div>
+
+                <!-- Random Input -->
+                <div id="randomInputGroup">
+                    <label style="display: block; color: #94a3b8; font-size: 0.875rem; margin-bottom: 0.5rem;">Node Count (2-20)</label>
+                    <input type="number" id="nodeCountInput" value="5" min="2" max="20" class="form-control" style="width: 100%; background: #1e293b; border: 1px solid #334155; color: white; padding: 0.5rem; border-radius: 0.25rem; margin-bottom: 1rem;">
+                    <button id="generateRandomBtn" class="btn btn-primary" style="width: 100%;">Generate Random Graph</button>
+                </div>
+
+                <!-- Manual Input -->
+                <div id="manualInputGroup" style="display: none;">
+                    <label style="display: block; color: #94a3b8; font-size: 0.875rem; margin-bottom: 0.5rem;">Edges (Source-Target-Weight)</label>
+                    <textarea id="manualEdgeInput" placeholder="A-B-5&#10;B-C-3&#10;A-C-10" rows="5" style="width: 100%; background: #1e293b; border: 1px solid #334155; color: white; padding: 0.5rem; border-radius: 0.25rem; margin-bottom: 1rem; font-family: monospace;"></textarea>
+                    <button id="generateManualBtn" class="btn btn-primary" style="width: 100%;">Generate From Data</button>
+                </div>
+            </div>
+
+            <!-- Action Section (Hidden until graph exists) -->
+            <div id="actionSection" style="display: none; flex-direction: column; gap: 1rem;">
+                <h3 style="font-size: 1.125rem; font-weight: 600; color: white; margin-bottom: 0.5rem;">Pathfinding</h3>
+
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem;">
+                    <div>
+                        <label style="color: #94a3b8; font-size: 0.75rem;">Start Node</label>
+                        <select id="startNodeSelect" style="width: 100%; background: #1e293b; border: 1px solid #334155; color: white; padding: 0.25rem; border-radius: 0.25rem;"></select>
+                    </div>
+                    <div>
+                        <label style="color: #94a3b8; font-size: 0.75rem;">Target Node</label>
+                        <select id="targetNodeSelect" style="width: 100%; background: #1e293b; border: 1px solid #334155; color: white; padding: 0.25rem; border-radius: 0.25rem;"></select>
+                    </div>
+                </div>
+
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem;">
+                    <button id="autoSolveBtn" class="btn btn-primary" style="background: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%);">Auto Solve</button>
+                    <button id="manualSolveBtn" class="btn btn-secondary" style="border-color: #10b981; color: #10b981;">Manual Play</button>
+                </div>
+
+                <button id="hintBtn" class="btn btn-secondary" style="width: 100%; border-color: #facc15; color: #facc15;">
+                    💡 Show Hint (-50 pts)
+                </button>
+
+                 <div id="stepControls" style="display: none; gap: 0.5rem; justify-content: center; margin-top: 0.5rem;">
+                     <button id="prevStepBtn" class="btn btn-sm btn-secondary" style="padding: 0.25rem 0.75rem;">&larr;</button>
+                     <button id="pauseBtn" class="btn btn-sm btn-secondary" style="padding: 0.25rem 0.75rem;">||</button>
+                     <button id="nextStepBtn" class="btn btn-sm btn-secondary" style="padding: 0.25rem 0.75rem;">&rarr;</button>
+                 </div>
+            </div>
+
+            <!-- Log/Guide -->
+            <div style="border-top: 1px solid rgba(255, 255, 255, 0.1); padding-top: 1rem;">
+                 <h3 style="font-size: 1.125rem; font-weight: 600; color: white; margin-bottom: 0.75rem;">Status</h3>
+                 <div id="statusText" style="margin-bottom: 1rem; font-size: 0.875rem; color: #cbd5e1; min-height: 3rem; background: rgba(0,0,0,0.2); padding: 0.5rem; border-radius: 0.5rem;">
+                     Ready to generate graph.
+                 </div>
+            </div>
+
+            <div style="border-top: 1px solid rgba(255, 255, 255, 0.1); padding-top: 1rem;">
+                <h3 style="font-size: 1.125rem; font-weight: 600; color: white; margin-bottom: 0.75rem;">How it works</h3>
+                <p style="font-size: 0.875rem; color: #94a3b8; line-height: 1.6; margin-bottom: 1.5rem;">
+                    Dijkstra's Algorithm finds the shortest path from a start node to a target node in a weighted graph. It uses a <span style="color: #60a5fa; font-weight: 600;">Greedy</span> approach, always expanding the unvisited node with the smallest known distance.
+                </p>
+
+                <h3 style="font-size: 1.125rem; font-weight: 600; color: white; margin-bottom: 1rem;">Complexity Analysis</h3>
+                
+                <div style="margin-bottom: 1.5rem;">
+                    <div style="margin-bottom: 1rem;">
+                        <p style="color: #94a3b8; font-size: 0.875rem; margin-bottom: 0.5rem;">Time Complexity:</p>
+                        <div style="display: inline-block; background: rgba(139, 92, 246, 0.2); border: 1px solid rgba(139, 92, 246, 0.5); color: #e9d5ff; padding: 0.5rem 1rem; border-radius: 0.5rem; font-family: monospace; font-weight: 600; letter-spacing: 0.05em;">
+                            O(E log V)
+                        </div>
+                    </div>
+                    
+                    <div style="margin-bottom: 1rem;">
+                        <p style="color: #94a3b8; font-size: 0.875rem; margin-bottom: 0.5rem;">Space Complexity:</p>
+                        <div style="display: inline-block; background: rgba(244, 63, 94, 0.2); border: 1px solid rgba(244, 63, 94, 0.5); color: #fecdd3; padding: 0.5rem 1rem; border-radius: 0.5rem; font-family: monospace; font-weight: 600; letter-spacing: 0.05em;">
+                            O(V + E)
+                        </div>
+                    </div>
+                </div>
+
+                <div style="background: rgba(0, 0, 0, 0.3); padding: 1rem; border-radius: 0.5rem; font-family: 'Courier New', monospace; font-size: 0.8rem; color: #34d399; line-height: 1.6; border: 1px solid rgba(52, 211, 153, 0.2);">
+                    function Dijkstra(start, target):<br/>
+                    &nbsp;&nbsp;dist[start] = 0<br/>
+                    &nbsp;&nbsp;priority_queue Q.push(start)<br/>
+                    <br/>
+                    &nbsp;&nbsp;while Q is not empty:<br/>
+                    &nbsp;&nbsp;&nbsp;&nbsp;u = Q.extractMin()<br/>
+                    &nbsp;&nbsp;&nbsp;&nbsp;if u == target: return dist[u]<br/>
+                    <br/>
+                    &nbsp;&nbsp;&nbsp;&nbsp;for each neighbor v of u:<br/>
+                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;alt = dist[u] + weight(u, v)<br/>
+                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;if alt < dist[v]:<br/>
+                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;dist[v] = alt<br/>
+                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;prev[v] = u<br/>
+                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Q.decreaseKey(v, alt)
+                </div>
+            </div>
+            
+            <div style="display: flex; justify-content: space-between; font-size: 0.75rem; color: #64748b; margin-top: 1rem;">
+                <span>Total Nodes: <span id="nodeCountDisplay">0</span></span>
+                <span>Total Edges: <span id="edgeCountDisplay">0</span></span>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="~/js/dijkstra.js"></script>
+}

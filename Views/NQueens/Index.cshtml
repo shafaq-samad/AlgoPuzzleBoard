@@ -1,0 +1,180 @@
+@{
+    ViewData["Title"] = "N-Queens Visualizer";
+}
+
+<style>
+    .chess-board {
+        display: grid;
+        gap: 2px;
+        background: #1e293b;
+        padding: 4px;
+        border-radius: 0.5rem;
+        box-shadow: 0 25px 50px -12px rgba(0,0,0,0.5);
+        border: 4px solid #334155;
+    }
+    
+    .chess-square {
+        aspect-ratio: 1;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: clamp(1.5rem, 4vw, 2.5rem);
+        cursor: pointer;
+        transition: all 0.2s;
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .chess-square.light {
+        background: #cbd5e1;
+    }
+    
+    .chess-square.dark {
+        background: #475569;
+    }
+    
+    .chess-square:hover {
+        transform: scale(1.05);
+        filter: brightness(1.1);
+    }
+    
+    .chess-square.unsafe {
+        background: rgba(239, 68, 68, 0.3) !important;
+        animation: pulse 1s infinite;
+    }
+    
+    @@keyframes pulse {
+        0%, 100% { opacity: 1; }
+        50% { opacity: 0.7; }
+    }
+    
+    .animate-bounce-in {
+        animation: bounceIn 0.5s;
+    }
+    
+    @@keyframes bounceIn {
+        0% { transform: scale(0); }
+        50% { transform: scale(1.2); }
+        100% { transform: scale(1); }
+    }
+</style>
+
+<div class="space-y-6 animate-fade-in-up">
+    <!-- Header -->
+    <div class="glass-panel algo-header">
+        <div class="header-left">
+            <h1 style="font-size: 1.875rem; font-weight: bold; background: linear-gradient(135deg, #a78bfa 0%, #ec4899 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; margin-bottom: 0.25rem;">
+                N-Queens Visualizer
+            </h1>
+            <p style="color: #64748b; font-size: 0.875rem;">Backtracking Algorithm</p>
+        </div>
+        <div class="header-right">
+            <div style="display: flex; flex-direction: column; align-items: end; margin-right: 1rem;">
+                <span id="timerDisplay" style="font-family: monospace; font-size: 1.25rem; color: #facc15; font-weight: bold;">00:00</span>
+                <span id="scoreDisplay" style="font-size: 0.875rem; color: #94a3b8;">Score: 0</span>
+            </div>
+            <button id="hintBtn" class="btn btn-secondary" style="border-color: #facc15; color: #facc15;">
+                <span style="margin-right: 0.5rem">💡</span>Hint
+            </button>
+            <span id="progressPercent" style="color: #94a3b8; font-size: 1.125rem; font-weight: 600;">0%</span>
+            <button id="resetBtn" class="btn btn-secondary">
+                Reset
+            </button>
+            <button id="solveBtn" class="btn btn-primary" style="background: linear-gradient(135deg, #8b5cf6 0%, #3b82f6 100%);">
+                Auto Solve
+            </button>
+        </div>
+    </div>
+
+    <div class="puzzle-grid">
+        <!-- Chessboard -->
+        <div class="glass-panel" style="padding: 2rem; border-radius: 1rem; display: flex; justify-content: center; align-items: center; min-height: 400px;">
+            <div id="chessboard" class="chess-board" style="grid-template-columns: repeat(8, 1fr); width: 100%; max-width: 500px; aspect-ratio: 1; max-height: 60vh;"></div>
+        </div>
+
+        <!-- Stats Panel -->
+        <div class="glass-panel" style="padding: 1.5rem; border-radius: 1rem; display: flex; flex-direction: column; gap: 1.5rem;">
+            <div>
+                <h3 style="font-size: 1.125rem; font-weight: 600; color: white; margin-bottom: 1rem;">Algorithm Stats</h3>
+                <div style="display: flex; flex-direction: column; gap: 0.75rem;">
+                    <div id="resultOverlay" style="position: absolute; inset: 0; display: none; align-items: center; justify-content: center; pointer-events: none; z-index: 10;">
+                        <div style="background: rgba(15, 23, 42, 0.9); padding: 1.5rem; border-radius: 1rem; border: 1px solid #8b5cf6; text-align: center; backdrop-filter: blur(4px);">
+                            <h2 style="font-size: 1.5rem; font-weight: bold; color: #a78bfa; margin-bottom: 0.5rem;">Solution Found!</h2>
+                            <p style="color: #cbd5e1; font-size: 1.125rem; margin-bottom: 1rem;">Queens Placed: <span id="resultQueensValue" style="color: #c084fc; font-weight: bold;">8</span></p>
+                            <p style="color: #94a3b8; font-size: 0.875rem; margin-bottom: 1rem;">Score: <span id="resultScoreValue">0</span></p>
+                            <button id="closeResultBtn" class="btn btn-sm btn-primary" style="pointer-events: auto;">Close</button>
+                        </div>
+                    </div>
+                    <div style="display: flex; justify-content: space-between; align-items: center; font-size: 0.875rem; color: #94a3b8;">
+                        <span>Board Size:</span>
+                        <span id="boardSize" style="color: #a78bfa; font-weight: 600;">8 x 8</span>
+                    </div>
+                    <div style="display: flex; justify-content: space-between; align-items: center; font-size: 0.875rem; color: #94a3b8;">
+                        <span>Queens Placed:</span>
+                        <span id="queensPlaced" style="color: #60a5fa; font-weight: 600;">0 / 8</span>
+                    </div>
+                    <div style="display: flex; justify-content: space-between; align-items: center; font-size: 0.875rem; color: #94a3b8;">
+                        <span>Backtracks:</span>
+                        <span id="backtracks" style="color: #f472b6; font-weight: 600;">0</span>
+                    </div>
+                </div>
+            </div>
+
+            <div style="border-top: 1px solid rgba(255, 255, 255, 0.1); padding-top: 1rem;">
+                 <h3 style="font-size: 1.125rem; font-weight: 600; color: white; margin-bottom: 0.75rem;">Step-by-Step Guide</h3>
+                 <div id="explanationText" style="margin-bottom: 1rem; font-size: 0.875rem; color: #cbd5e1; min-height: 3rem; background: rgba(0,0,0,0.2); padding: 0.5rem; border-radius: 0.5rem;">
+                     Click a square to place a queen or use Auto Solve.
+                 </div>
+                 <div id="stepControls" style="display: none; gap: 0.5rem; justify-content: center;">
+                     <button id="prevStepBtn" class="btn btn-sm btn-secondary" style="padding: 0.25rem 0.75rem;">&larr;</button>
+                     <button id="pauseBtn" class="btn btn-sm btn-secondary" style="padding: 0.25rem 0.75rem;">||</button>
+                     <button id="nextStepBtn" class="btn btn-sm btn-secondary" style="padding: 0.25rem 0.75rem;">&rarr;</button>
+                 </div>
+            </div>
+
+            <div style="border-top: 1px solid rgba(255, 255, 255, 0.1); padding-top: 1rem;">
+                <h3 style="font-size: 1.125rem; font-weight: 600; color: white; margin-bottom: 0.75rem;">How it works</h3>
+                <p style="font-size: 0.875rem; color: #94a3b8; line-height: 1.6; margin-bottom: 1.5rem;">
+                    The N-Queens puzzle challenges you to place N queens on an N×N chessboard so that no two queens attack each other. This algorithm uses <span style="color: #a78bfa; font-weight: 600;">Backtracking</span> to systematically explore valid placements, retracing its steps whenever a conflict prevents a solution.
+                </p>
+                
+                <h3 style="font-size: 1.125rem; font-weight: 600; color: white; margin-bottom: 1rem;">Complexity Analysis</h3>
+                
+                <div style="margin-bottom: 1.5rem;">
+                    <div style="margin-bottom: 1rem;">
+                        <p style="color: #94a3b8; font-size: 0.875rem; margin-bottom: 0.5rem;">Time Complexity:</p>
+                        <div style="display: inline-block; background: rgba(139, 92, 246, 0.2); border: 1px solid rgba(139, 92, 246, 0.5); color: #e9d5ff; padding: 0.5rem 1rem; border-radius: 0.5rem; font-family: monospace; font-weight: 600; letter-spacing: 0.05em;">
+                            O(N!)
+                        </div>
+                    </div>
+                    
+                    <div style="margin-bottom: 1rem;">
+                        <p style="color: #94a3b8; font-size: 0.875rem; margin-bottom: 0.5rem;">Space Complexity:</p>
+                        <div style="display: inline-block; background: rgba(244, 63, 94, 0.2); border: 1px solid rgba(244, 63, 94, 0.5); color: #fecdd3; padding: 0.5rem 1rem; border-radius: 0.5rem; font-family: monospace; font-weight: 600; letter-spacing: 0.05em;">
+                            O(N)
+                        </div>
+                    </div>
+                </div>
+
+                <div style="background: rgba(0, 0, 0, 0.3); padding: 1rem; border-radius: 0.5rem; font-family: 'Courier New', monospace; font-size: 0.8rem; color: #34d399; line-height: 1.6; border: 1px solid rgba(52, 211, 153, 0.2);">
+                    function solveQueen(row):<br/>
+                    &nbsp;&nbsp;if row == N:<br/>
+                    &nbsp;&nbsp;&nbsp;&nbsp;return true // All queens placed<br/>
+                    <br/>
+                    &nbsp;&nbsp;for col from 0 to N-1:<br/>
+                    &nbsp;&nbsp;&nbsp;&nbsp;if isSafe(row, col):<br/>
+                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;board[row][col] = 1<br/>
+                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;if solveQueen(row + 1):<br/>
+                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;return true<br/>
+                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;board[row][col] = 0 // BACKTRACK<br/>
+                    <br/>
+                    &nbsp;&nbsp;return false
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="~/js/nqueens.js"></script>
+}

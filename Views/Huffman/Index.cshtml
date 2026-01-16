@@ -1,0 +1,142 @@
+@{
+    ViewData["Title"] = "Huffman Coding";
+}
+
+<div class="space-y-6 animate-fade-in-up">
+    <!-- Header -->
+    <div class="glass-panel algo-header">
+        <div class="header-left">
+            <h1 style="font-size: 1.875rem; font-weight: bold; background: linear-gradient(135deg, #f472b6 0%, #f43f5e 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 0.25rem;">
+                Huffman Coding
+            </h1>
+            <p style="color: #64748b; font-size: 0.875rem;">Greedy Compression Algorithm</p>
+        </div>
+        <div class="header-right">
+            <div style="display: flex; flex-direction: column; align-items: end; margin-right: 1rem;">
+                <span id="timerDisplay" style="font-family: monospace; font-size: 1.25rem; color: #facc15; font-weight: bold;">00:00</span>
+                <span id="scoreDisplay" style="font-size: 0.875rem; color: #94a3b8;">Score: 0</span>
+            </div>
+            <button id="hintBtn" class="btn btn-secondary" style="border-color: #facc15; color: #facc15;">
+                <span style="margin-right: 0.5rem">💡</span>Hint
+            </button>
+            <button id="resetBtn" class="btn btn-secondary">Reset</button>
+            <button id="buildBtn" class="btn btn-primary" style="background: linear-gradient(135deg, #ec4899 0%, #f43f5e 100%);">Build Tree</button>
+        </div>
+    </div>
+
+    <div class="puzzle-grid">
+        <!-- Visualization Area -->
+        <div class="glass-panel" style="padding: 2rem; border-radius: 1rem; min-height: 500px; max-height: 600px; overflow: auto;">
+            <div style="min-width: 100%; min-height: 600px; display: flex; align-items: center; justify-content: center; position: relative;">
+                <svg id="treeSvg" width="100%" height="100%" style="width: 100%; height: auto; min-height: 500px;"></svg>
+                <div id="emptyTreeMessage" style="position: absolute; color: #64748b; text-align: center; font-size: 0.875rem;">
+                    Enter text and click "Build Tree" to visualize the structure.
+                </div>
+            </div>
+        </div>
+
+        <!-- Controls -->
+        <div class="glass-panel" style="padding: 1.5rem; border-radius: 1rem; display: flex; flex-direction: column; gap: 1.5rem;">
+            <div>
+                <h3 style="font-size: 1.125rem; font-weight: 600; color: white; margin-bottom: 0.75rem;">Input Data</h3>
+                <input id="inputText" type="text" value="banana" style="width: 100%; background: #1e293b; border: 1px solid rgba(255,255,255,0.1); border-radius: 0.5rem; padding: 0.75rem; color: white; font-size: 0.875rem;" placeholder="Enter string to compress..." />
+            </div>
+
+            <div style="border-top: 1px solid rgba(255, 255, 255, 0.1); padding-top: 1rem;">
+                 <h3 style="font-size: 1.125rem; font-weight: 600; color: white; margin-bottom: 0.75rem;">Step-by-Step Guide</h3>
+                 <div id="explanationText" style="margin-bottom: 1rem; font-size: 0.875rem; color: #cbd5e1; min-height: 3rem; background: rgba(0,0,0,0.2); padding: 0.5rem; border-radius: 0.5rem;">
+                     Enter text and click 'Build Tree' to see Huffman compression.
+                 </div>
+                 <div id="stepControls" style="display: none; gap: 0.5rem; justify-content: center;">
+                     <button id="prevStepBtn" class="btn btn-sm btn-secondary" style="padding: 0.25rem 0.75rem;">&larr;</button>
+                     <button id="pauseBtn" class="btn btn-sm btn-secondary" style="padding: 0.25rem 0.75rem;">||</button>
+                     <button id="nextStepBtn" class="btn btn-sm btn-secondary" style="padding: 0.25rem 0.75rem;">&rarr;</button>
+                 </div>
+            </div>
+
+                <div id="resultOverlay" style="position: absolute; inset: 0; display: none; align-items: center; justify-content: center; pointer-events: none; z-index: 10;">
+                    <div style="background: rgba(15, 23, 42, 0.9); padding: 1.5rem; border-radius: 1rem; border: 1px solid #ec4899; text-align: center; backdrop-filter: blur(4px);">
+                        <h2 style="font-size: 1.5rem; font-weight: bold; color: #f472b6; margin-bottom: 0.5rem;">Compression Complete!</h2>
+                        <p style="color: #cbd5e1; font-size: 1.125rem; margin-bottom: 1rem;">Ratio: <span id="resultRatioValue" style="color: #4ade80; font-weight: bold;">0%</span></p>
+                        <p style="color: #94a3b8; font-size: 0.875rem; margin-bottom: 1rem;">Score: <span id="resultScoreValue">0</span></p>
+                        <button id="closeResultBtn" class="btn btn-sm btn-primary" style="pointer-events: auto;">Close</button>
+                    </div>
+                </div>
+            </div>
+
+            <div id="codesSection" style="display: none;">
+                <h3 style="font-size: 1.125rem; font-weight: 600; color: white; margin-bottom: 0.75rem;">Huffman Codes</h3>
+                <div id="codesList" style="max-height: 16rem; overflow-y: auto;"></div>
+            </div>
+
+            <div id="decompressionSection" style="display: none; border-top: 1px solid rgba(255, 255, 255, 0.1); padding-top: 1rem; margin-top: 1rem;">
+                <h3 style="font-size: 1.125rem; font-weight: 600; color: white; margin-bottom: 0.75rem;">Decompression Test</h3>
+                <div style="margin-bottom: 0.5rem;">
+                    <label style="color: #94a3b8; font-size: 0.75rem;">Encoded Binary:</label>
+                    <div id="encodedDisplay" style="font-family: monospace; color: #f472b6; word-break: break-all; background: rgba(0,0,0,0.2); padding: 0.5rem; border-radius: 0.25rem;"></div>
+                </div>
+                 <div style="display: flex; gap: 0.5rem; align-items: center; margin-bottom: 0.5rem;">
+                    <button id="decompressBtn" class="btn btn-sm btn-primary">Decompress</button>
+                    <span id="decompressResult" style="color: #4ade80; font-weight: bold;"></span>
+                </div>
+            </div>
+
+            <div id="statsSection" style="display: none; border-top: 1px solid rgba(255, 255, 255, 0.1); padding-top: 1rem;">
+                <div style="display: flex; justify-content: space-between; font-size: 0.875rem; color: #94a3b8; margin-bottom: 0.5rem;">
+                    <span>Original Size:</span>
+                    <span id="originalSize">0 bits</span>
+                </div>
+                <div style="display: flex; justify-content: space-between; font-size: 0.875rem; color: #94a3b8;">
+                    <span>Compressed Size:</span>
+                    <span id="compressedSize" style="color: #4ade80; font-weight: 600;">0 bits</span>
+                </div>
+            </div>
+
+            <div style="border-top: 1px solid rgba(255, 255, 255, 0.1); padding-top: 1rem; margin-top: 1rem;">
+                <h3 style="font-size: 1.125rem; font-weight: 600; color: white; margin-bottom: 0.75rem;">How it works</h3>
+                <p style="font-size: 0.875rem; color: #94a3b8; line-height: 1.6; margin-bottom: 1.5rem;">
+                    Huffman Coding is a lossless data compression algorithm. It assigns variable-length codes to characters, with shorter codes for more frequent characters, using a <span style="color: #f472b6; font-weight: 600;">Greedy</span> approach to build an optimal prefix tree.
+                </p>
+
+                <h3 style="font-size: 1.125rem; font-weight: 600; color: white; margin-bottom: 1rem;">Complexity Analysis</h3>
+                
+                <div style="margin-bottom: 1.5rem;">
+                    <div style="margin-bottom: 1rem;">
+                        <p style="color: #94a3b8; font-size: 0.875rem; margin-bottom: 0.5rem;">Time Complexity:</p>
+                        <div style="display: inline-block; background: rgba(139, 92, 246, 0.2); border: 1px solid rgba(139, 92, 246, 0.5); color: #e9d5ff; padding: 0.5rem 1rem; border-radius: 0.5rem; font-family: monospace; font-weight: 600; letter-spacing: 0.05em;">
+                            O(N log N)
+                        </div>
+                    </div>
+                    
+                    <div style="margin-bottom: 1rem;">
+                        <p style="color: #94a3b8; font-size: 0.875rem; margin-bottom: 0.5rem;">Space Complexity:</p>
+                        <div style="display: inline-block; background: rgba(244, 63, 94, 0.2); border: 1px solid rgba(244, 63, 94, 0.5); color: #fecdd3; padding: 0.5rem 1rem; border-radius: 0.5rem; font-family: monospace; font-weight: 600; letter-spacing: 0.05em;">
+                            O(N)
+                        </div>
+                    </div>
+                </div>
+
+                <div style="background: rgba(0, 0, 0, 0.3); padding: 1rem; border-radius: 0.5rem; font-family: 'Courier New', monospace; font-size: 0.8rem; color: #34d399; line-height: 1.6; border: 1px solid rgba(52, 211, 153, 0.2);">
+                    function buildHuffman(text):<br/>
+                    &nbsp;&nbsp;count freq of each char<br/>
+                    &nbsp;&nbsp;create leaf node for each char<br/>
+                    &nbsp;&nbsp;priority_queue Q = all nodes<br/>
+                    <br/>
+                    &nbsp;&nbsp;while Q.size() > 1:<br/>
+                    &nbsp;&nbsp;&nbsp;&nbsp;left = Q.extractMin()<br/>
+                    &nbsp;&nbsp;&nbsp;&nbsp;right = Q.extractMin()<br/>
+                    &nbsp;&nbsp;&nbsp;&nbsp;newNode = (left.freq + right.freq)<br/>
+                    &nbsp;&nbsp;&nbsp;&nbsp;newNode.left = left<br/>
+                    &nbsp;&nbsp;&nbsp;&nbsp;newNode.right = right<br/>
+                    &nbsp;&nbsp;&nbsp;&nbsp;Q.insert(newNode)<br/>
+                    <br/>
+                    &nbsp;&nbsp;return Q.extractMin() // Root
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="~/js/huffman.js"></script>
+}

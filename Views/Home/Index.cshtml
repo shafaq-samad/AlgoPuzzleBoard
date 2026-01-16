@@ -1,0 +1,447 @@
+﻿@{
+    ViewData["Title"] = "Dashboard";
+}
+
+<div class="space-y-8 animate-fade-in-up">
+    <!-- Hero Section -->
+    <div class="hero-section">
+        <div class="hero-glow"></div>
+        <div class="hero-content">
+            <h1 class="hero-title">
+                Master Algorithms Visually
+            </h1>
+            <p class="hero-description">
+                Welcome to the Algo Puzzle Board. Interactive visualizations for classic algorithmic problems. Select a module below to begin your journey into the mind of the computer.
+            </p>
+        </div>
+    </div>
+
+    <!-- Search Section -->
+    <style>
+        .search-container {
+            max-width: 600px;
+            margin: 0 auto 3rem auto;
+            position: relative;
+            z-index: 10;
+        }
+        
+        .search-input {
+            width: 100%;
+            background: rgba(15, 23, 42, 0.6);
+            backdrop-filter: blur(8px);
+            border: 1px solid #334155;
+            color: #f8fafc;
+            padding: 1rem 2rem;
+            border-radius: 9999px;
+            font-size: 1.125rem;
+            text-align: center;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+        }
+        
+        .search-input:hover {
+            transform: translateY(-2px);
+            border-color: #64748b;
+            background: rgba(30, 41, 59, 0.8);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+        }
+        
+        .search-input:focus {
+            outline: none;
+            border-color: #3b82f6;
+            background: #0f172a;
+            transform: translateY(-2px);
+            box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.2), 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+        }
+
+        .search-input::placeholder {
+            color: #94a3b8;
+        }
+    </style>
+
+    <div class="search-container">
+        <input type="text" id="algoSearch" class="search-input" placeholder="🔍 Find your algorithm..." autocomplete="off">
+    </div>
+
+    <!-- Modules Grid - 3 cards per row -->
+    <div class="card-grid" id="modulesGrid">
+        <!-- N-Queens Card -->
+        <a href="@Url.Action("Index", "NQueens")" class="module-card">
+            <div class="module-card-glow" style="background: linear-gradient(135deg, #8b5cf6 0%, #3b82f6 100%);"></div>
+            <div class="module-card-content">
+                <div class="module-icon" style="background: rgba(139, 92, 246, 0.15); color: #a78bfa; font-size: 2rem; margin-bottom: 1rem;">
+                    ♛
+                </div>
+                <h3 class="module-title">N-Queens Problem</h3>
+                <p class="module-description">
+                    Place N queens on an NxN chessboard so no two queens attack each other. Visualize Warnsdorff's heuristic.
+                </p>
+                <div class="module-badge" style="color: #a78bfa; text-transform: uppercase; font-size: 0.75rem; margin-top: 1rem;">Backtracking</div>
+            </div>
+        </a>
+
+        <!-- Knight's Tour Card -->
+        <a href="@Url.Action("Index", "KnightsTour")" class="module-card">
+            <div class="module-card-glow" style="background: linear-gradient(135deg, #10b981 0%, #14b8a6 100%);"></div>
+            <div class="module-card-content">
+                <div class="module-icon" style="background: rgba(16, 185, 129, 0.15); color: #34d399; font-size: 2rem; margin-bottom: 1rem;">
+                    ♞
+                </div>
+                <h3 class="module-title">Knight's Tour</h3>
+                <p class="module-description">
+                    Move a knight to every square on the board exactly once. Discover Warnsdorff's heuristic.
+                </p>
+                <div class="module-badge" style="color: #34d399; text-transform: uppercase; font-size: 0.75rem; margin-top: 1rem;">Graph Traversal</div>
+            </div>
+        </a>
+
+        <!-- Graph Coloring Card -->
+        <a href="@Url.Action("Index", "GraphColoring")" class="module-card">
+            <div class="module-card-glow" style="background: linear-gradient(135deg, #f97316 0%, #dc2626 100%);"></div>
+            <div class="module-card-content">
+                <div class="module-icon" style="background: rgba(249, 115, 22, 0.15); color: #fb923c; font-size: 2rem; margin-bottom: 1rem;">
+                    🎨
+                </div>
+                <h3 class="module-title">Graph Coloring</h3>
+                <p class="module-description">
+                    Color vertices of a graph such that no two adjacent vertices share the same color.
+                </p>
+                <div class="module-badge" style="color: #fb923c; text-transform: uppercase; font-size: 0.75rem; margin-top: 1rem;">Greedy Algorithm</div>
+            </div>
+        </a>
+
+        <!-- TSP Card -->
+        <a href="@Url.Action("Index", "TSP")" class="module-card">
+            <div class="module-card-glow" style="background: linear-gradient(135deg, #3b82f6 0%, #06b6d4 100%);"></div>
+            <div class="module-card-content">
+                <div class="module-icon" style="background: rgba(59, 130, 246, 0.15); color: #60a5fa; font-size: 2rem; margin-bottom: 1rem;">
+                    🗺️
+                </div>
+                <h3 class="module-title">Travelling Salesman</h3>
+                <p class="module-description">
+                    Find the shortest possible route that visits each city and returns to the origin city.
+                </p>
+                <div class="module-badge" style="color: #60a5fa; text-transform: uppercase; font-size: 0.75rem; margin-top: 1rem;">Optimization</div>
+            </div>
+        </a>
+
+        <!-- Huffman Card -->
+        <a href="@Url.Action("Index", "Huffman")" class="module-card">
+            <div class="module-card-glow" style="background: linear-gradient(135deg, #ec4899 0%, #f43f5e 100%);"></div>
+            <div class="module-card-content">
+                <div class="module-icon" style="background: rgba(236, 72, 153, 0.15); color: #f472b6; font-size: 2rem; margin-bottom: 1rem;">
+                    🌲
+                </div>
+                <h3 class="module-title">Huffman Coding</h3>
+                <p class="module-description">
+                    Build the optimal prefix code tree for lossless data compression.
+                </p>
+                <div class="module-badge" style="color: #f472b6; text-transform: uppercase; font-size: 0.75rem; margin-top: 1rem;">Greedy Algorithm</div>
+            </div>
+        </a>
+
+        <!-- Dijkstra Card -->
+        <a href="@Url.Action("Index", "Dijkstra")" class="module-card">
+            <div class="module-card-glow" style="background: linear-gradient(135deg, #fbbf24 0%, #d97706 100%);"></div>
+            <div class="module-card-content">
+                <div class="module-icon" style="background: rgba(251, 191, 36, 0.15); color: #fcd34d; font-size: 2rem; margin-bottom: 1rem;">
+                    🚩
+                </div>
+                <h3 class="module-title">Dijkstra's Algo</h3>
+                <p class="module-description">
+                    Find the shortest path between nodes in a graph. Essential for routing and navigation.
+                </p>
+                <div class="module-badge" style="color: #fcd34d; text-transform: uppercase; font-size: 0.75rem; margin-top: 1rem;">Graph Search</div>
+            </div>
+        </a>
+
+        <!-- Kruskal's Algorithm Card -->
+        <a href="@Url.Action("Index", "Kruskal")" class="module-card">
+            <div class="module-card-glow" style="background: linear-gradient(135deg, #ec4899 0%, #8b5cf6 100%);"></div>
+            <div class="module-card-content">
+                <div class="module-icon" style="background: rgba(236, 72, 153, 0.15); color: #f472b6; font-size: 2rem; margin-bottom: 1rem;">
+                    🕸️
+                </div>
+                <h3 class="module-title">Kruskal's MST</h3>
+                <p class="module-description">
+                    Find Minimum Spanning Tree by sorting edges. Visualize Union-Find steps.
+                </p>
+                <div class="module-badge" style="color: #f472b6; text-transform: uppercase; font-size: 0.75rem; margin-top: 1rem;">Graph Algorithm</div>
+            </div>
+        </a>
+
+        <!-- Prim's Algorithm Card -->
+        <a href="@Url.Action("Index", "Prim")" class="module-card">
+            <div class="module-card-glow" style="background: linear-gradient(135deg, #10b981 0%, #3b82f6 100%);"></div>
+            <div class="module-card-content">
+                <div class="module-icon" style="background: rgba(16, 185, 129, 0.15); color: #34d399; font-size: 2rem; margin-bottom: 1rem;">
+                    🌱
+                </div>
+                <h3 class="module-title">Prim's MST</h3>
+                <p class="module-description">
+                    Grow Minimum Spanning Tree from a start node. Always pick the nearest neighbor.
+                </p>
+                <div class="module-badge" style="color: #34d399; text-transform: uppercase; font-size: 0.75rem; margin-top: 1rem;">Graph Algorithm</div>
+            </div>
+        </a>
+
+        </a>
+
+        <!-- BFS Tree Traversal Card -->
+        <a href="@Url.Action("Index", "BFS")" class="module-card">
+            <div class="module-card-glow" style="background: linear-gradient(135deg, #06b6d4 0%, #3b82f6 100%);"></div>
+            <div class="module-card-content">
+                <div class="module-icon" style="background: rgba(6, 182, 212, 0.15); color: #22d3ee; font-size: 2rem; margin-bottom: 1rem;">
+                    🌳
+                </div>
+                <h3 class="module-title">BFS Tree Traversal</h3>
+                <p class="module-description">
+                    Level-order traversal of Binary Search Trees. Explore nodes level by level with manual and auto modes.
+                </p>
+                <div class="module-badge" style="color: #22d3ee; text-transform: uppercase; font-size: 0.75rem; margin-top: 1rem;">Tree Traversal</div>
+            </div>
+        </a>
+
+        <!-- DFS Tree Traversal Card -->
+        <a href="@Url.Action("Index", "DFS")" class="module-card">
+            <div class="module-card-glow" style="background: linear-gradient(135deg, #f472b6 0%, #3b82f6 100%);"></div>
+            <div class="module-card-content">
+                <div class="module-icon" style="background: rgba(244, 114, 182, 0.15); color: #f472b6; font-size: 2rem; margin-bottom: 1rem;">
+                    🌲
+                </div>
+                <h3 class="module-title">DFS Tree Traversal</h3>
+                <p class="module-description">
+                    Explore Depth-First search. Support for Pre-order, In-order, and Post-order traversals on Binary Search Trees.
+                </p>
+                <div class="module-badge" style="color: #f472b6; text-transform: uppercase; font-size: 0.75rem; margin-top: 1rem;">Tree Traversal</div>
+            </div>
+        </a>
+
+        <!-- BFS Graph Traversal Card -->
+        <a href="@Url.Action("Index", "BFSGraph")" class="module-card">
+            <div class="module-card-glow" style="background: linear-gradient(135deg, #22d3ee 0%, #3b82f6 100%);"></div>
+            <div class="module-card-content">
+                <div class="module-icon" style="background: rgba(34, 211, 238, 0.15); color: #22d3ee; font-size: 2rem; margin-bottom: 1rem;">
+                    🕸️
+                </div>
+                <h3 class="module-title">BFS Graph Traversal</h3>
+                <p class="module-description">
+                    Explore level-order traversal on general graphs. Visualizes the queue mechanism and handles cycles correctly.
+                </p>
+                <div class="module-badge" style="color: #22d3ee; text-transform: uppercase; font-size: 0.75rem; margin-top: 1rem;">Graph Algorithm</div>
+            </div>
+        </a>
+
+        <!-- DFS Graph Traversal Card -->
+        <a href="@Url.Action("Index", "DFSGraph")" class="module-card">
+            <div class="module-card-glow" style="background: linear-gradient(135deg, #f472b6 0%, #a855f7 100%);"></div>
+            <div class="module-card-content">
+                <div class="module-icon" style="background: rgba(244, 114, 182, 0.15); color: #f472b6; font-size: 2rem; margin-bottom: 1rem;">
+                    🌲
+                </div>
+                <h3 class="module-title">DFS Graph Traversal</h3>
+                <p class="module-description">
+                    Explore depth-first traversal on general graphs. Visualizes the stack mechanism and backtracking behavior.
+                </p>
+                <div class="module-badge" style="color: #f472b6; text-transform: uppercase; font-size: 0.75rem; margin-top: 1rem;">Graph Algorithm</div>
+            </div>
+        </a>
+
+        <!-- Max Heap Card -->
+        <a href="@Url.Action("Index", "Heap")" class="module-card">
+            <div class="module-card-glow" style="background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%);"></div>
+            <div class="module-card-content">
+                <div class="module-icon" style="background: rgba(251, 191, 36, 0.15); color: #fbbf24; font-size: 2rem; margin-bottom: 1rem;">
+                    ⛰️
+                </div>
+                <h3 class="module-title">Max Heap</h3>
+                <p class="module-description">
+                    Build a Max Heap from an arbitrary array. Visualizes the heapify process and data positioning within the tree.
+                </p>
+                <div class="module-badge" style="color: #fbbf24; text-transform: uppercase; font-size: 0.75rem; margin-top: 1rem;">Data Structure</div>
+            </div>
+        </a>
+
+        <!-- Min Heap Card -->
+        <a href="@Url.Action("Index", "MinHeap")" class="module-card">
+            <div class="module-card-glow" style="background: linear-gradient(135deg, #22d3ee 0%, #3b82f6 100%);"></div>
+            <div class="module-card-content">
+                <div class="module-icon" style="background: rgba(34, 211, 238, 0.15); color: #22d3ee; font-size: 2rem; margin-bottom: 1rem;">
+                    💎
+                </div>
+                <h3 class="module-title">Min Heap</h3>
+                <p class="module-description">
+                    Build a Min Heap from an arbitrary array. Visualizes the smallest element bubbling to the root.
+                </p>
+                <div class="module-badge" style="color: #22d3ee; text-transform: uppercase; font-size: 0.75rem; margin-top: 1rem;">Data Structure</div>
+            </div>
+        </a>
+
+        <!-- BST Construction Card -->
+        <a href="@Url.Action("Index", "BST")" class="module-card">
+            <div class="module-card-glow" style="background: linear-gradient(135deg, #a855f7 0%, #6366f1 100%);"></div>
+            <div class="module-card-content">
+                <div class="module-icon" style="background: rgba(168, 85, 247, 0.15); color: #a855f7; font-size: 2rem; margin-bottom: 1rem;">
+                    🌳
+                </div>
+                <h3 class="module-title">BST Construction</h3>
+                <p class="module-description">
+                    Visualize the creation of a Binary Search Tree. Watch how values are compared and placed in their correct subtree.
+                </p>
+                <div class="module-badge" style="color: #a855f7; text-transform: uppercase; font-size: 0.75rem; margin-top: 1rem;">Data Structure</div>
+            </div>
+        </a>
+
+        <!-- Bubble Sort Card -->
+        <a href="@Url.Action("Index", "BubbleSort")" class="module-card">
+            <div class="module-card-glow" style="background: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%);"></div>
+            <div class="module-card-content">
+                <div class="module-icon" style="background: rgba(59, 130, 246, 0.15); color: #60a5fa; font-size: 2rem; margin-bottom: 1rem;">
+                    📊
+                </div>
+                <h3 class="module-title">Bubble Sort</h3>
+                <p class="module-description">
+                    Visualize the classic sorting algorithm step-by-step. Watch comparisons and swaps in real-time.
+                </p>
+                <div class="module-badge" style="color: #60a5fa; text-transform: uppercase; font-size: 0.75rem; margin-top: 1rem;">Sorting Algorithm</div>
+            </div>
+        </a>
+
+        <!-- Heap Sort Card -->
+        <a href="@Url.Action("Index", "HeapSort")" class="module-card">
+            <div class="module-card-glow" style="background: linear-gradient(135deg, #8b5cf6 0%, #ec4899 100%);"></div>
+            <div class="module-card-content">
+                <div class="module-icon" style="background: rgba(139, 92, 246, 0.15); color: #a78bfa; font-size: 2rem; margin-bottom: 1rem;">
+                    🔺
+                </div>
+                <h3 class="module-title">Heap Sort</h3>
+                <p class="module-description">
+                    Build a binary heap and extract elements to sort. Visualize heapify operations step-by-step.
+                </p>
+                <div class="module-badge" style="color: #a78bfa; text-transform: uppercase; font-size: 0.75rem; margin-top: 1rem;">Sorting Algorithm</div>
+            </div>
+        </a>
+
+        <!-- Merge Sort Card -->
+        <a href="@Url.Action("Index", "MergeSort")" class="module-card">
+            <div class="module-card-glow" style="background: linear-gradient(135deg, #06b6d4 0%, #3b82f6 100%);"></div>
+            <div class="module-card-content">
+                <div class="module-icon" style="background: rgba(6, 182, 212, 0.15); color: #22d3ee; font-size: 2rem; margin-bottom: 1rem;">
+                    🔀
+                </div>
+                <h3 class="module-title">Merge Sort</h3>
+                <p class="module-description">
+                    Divide and conquer sorting algorithm. Watch recursive division and merging in action.
+                </p>
+                <div class="module-badge" style="color: #22d3ee; text-transform: uppercase; font-size: 0.75rem; margin-top: 1rem;">Sorting Algorithm</div>
+            </div>
+        </a>
+
+        <!-- Quick Sort Card -->
+        <a href="@Url.Action("Index", "QuickSort")" class="module-card">
+            <div class="module-card-glow" style="background: linear-gradient(135deg, #a855f7 0%, #3b82f6 100%);"></div>
+            <div class="module-card-content">
+                <div class="module-icon" style="background: rgba(168, 85, 247, 0.15); color: #c084fc; font-size: 2rem; margin-bottom: 1rem;">
+                    ⚡
+                </div>
+                <h3 class="module-title">Quick Sort</h3>
+                <p class="module-description">
+                    Fast divide-and-conquer algorithm. Master the pivot partition strategy.
+                </p>
+                <div class="module-badge" style="color: #c084fc; text-transform: uppercase; font-size: 0.75rem; margin-top: 1rem;">Sorting Algorithm</div>
+            </div>
+        </a>
+
+        <!-- Radix Sort Card -->
+        <a href="@Url.Action("Index", "RadixSort")" class="module-card">
+            <div class="module-card-glow" style="background: linear-gradient(135deg, #ec4899 0%, #8b5cf6 100%);"></div>
+            <div class="module-card-content">
+                <div class="module-icon" style="background: rgba(236, 72, 153, 0.15); color: #f472b6; font-size: 2rem; margin-bottom: 1rem;">
+                    🔢
+                </div>
+                <h3 class="module-title">Radix Sort</h3>
+                <p class="module-description">
+                    Non-comparative sorting algorithm. Visualize digit-by-digit processing.
+                </p>
+                <div class="module-badge" style="color: #f472b6; text-transform: uppercase; font-size: 0.75rem; margin-top: 1rem;">Sorting Algorithm</div>
+            </div>
+        </a>
+
+        <!-- Linear Search Card -->
+        <a href="@Url.Action("Index", "LinearSearch")" class="module-card">
+            <div class="module-card-glow" style="background: linear-gradient(135deg, #06b6d4 0%, #3b82f6 100%);"></div>
+            <div class="module-card-content">
+                <div class="module-icon" style="background: rgba(6, 182, 212, 0.15); color: #22d3ee; font-size: 2rem; margin-bottom: 1rem;">
+                    🔍
+                </div>
+                <h3 class="module-title">Linear Search</h3>
+                <p class="module-description">
+                    Simple sequential search. Find a specific value in an array.
+                </p>
+                <div class="module-badge" style="color: #22d3ee; text-transform: uppercase; font-size: 0.75rem; margin-top: 1rem;">Search Algorithm</div>
+            </div>
+        </a>
+
+        <!-- Binary Search Card -->
+        <a href="@Url.Action("Index", "BinarySearch")" class="module-card">
+            <div class="module-card-glow" style="background: linear-gradient(135deg, #f59e0b 0%, #ef4444 100%);"></div>
+            <div class="module-card-content">
+                <div class="module-icon" style="background: rgba(245, 158, 11, 0.15); color: #fbbf24; font-size: 2rem; margin-bottom: 1rem;">
+                    🔎
+                </div>
+                <h3 class="module-title">Binary Search</h3>
+                <p class="module-description">
+                    Efficient search algorithm. Divide and conquer on sorted arrays.
+                </p>
+                <div class="module-badge" style="color: #fbbf24; text-transform: uppercase; font-size: 0.75rem; margin-top: 1rem;">Search Algorithm</div>
+            </div>
+        </a>
+
+        <!-- Interpolation Search Card -->
+        <a href="@Url.Action("Index", "InterpolationSearch")" class="module-card">
+            <div class="module-card-glow" style="background: linear-gradient(135deg, #8b5cf6 0%, #3b82f6 100%);"></div>
+            <div class="module-card-content">
+                <div class="module-icon" style="background: rgba(139, 92, 246, 0.15); color: #a78bfa; font-size: 2rem; margin-bottom: 1rem;">
+                    🎯
+                </div>
+                <h3 class="module-title">Interpolation Search</h3>
+                <p class="module-description">
+                    Smart search for uniform data. Estimates position based on value.
+                </p>
+                <div class="module-badge" style="color: #a78bfa; text-transform: uppercase; font-size: 0.75rem; margin-top: 1rem;">Search Algorithm</div>
+            </div>
+        </a>
+
+
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const searchInput = document.getElementById('algoSearch');
+        const cards = document.querySelectorAll('.module-card');
+        const grid = document.getElementById('modulesGrid');
+
+        searchInput.addEventListener('input', (e) => {
+            const term = e.target.value.toLowerCase().trim();
+            let visibleCount = 0;
+
+            cards.forEach(card => {
+                const title = card.querySelector('.module-title').textContent.toLowerCase();
+                const desc = card.querySelector('.module-description').textContent.toLowerCase();
+                const badge = card.querySelector('.module-badge').textContent.toLowerCase();
+
+                if (title.includes(term) || desc.includes(term) || badge.includes(term)) {
+                    card.style.display = ''; // Restore default
+                    visibleCount++;
+                } else {
+                    card.style.display = 'none';
+                }
+            });
+            
+            // Optional: Show message if no results
+            // if (visibleCount === 0) ...
+        });
+        
+    });
+</script>

@@ -1,0 +1,198 @@
+@{
+    ViewData["Title"] = "Prim's Algorithm";
+}
+
+<div class="space-y-6 animate-fade-in-up">
+    <!-- Header -->
+    <div class="glass-panel algo-header">
+        <div class="header-left">
+            <h1 style="font-size: 1.875rem; font-weight: bold; background: linear-gradient(135deg, #10b981 0%, #3b82f6 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 0.25rem;">
+                Prim's Algorithm (MST)
+            </h1>
+            <p style="color: #64748b; font-size: 0.875rem;">Find the Minimum Spanning Tree by growing from a start node.</p>
+        </div>
+        <div class="header-right" style="display: flex; align-items: center; gap: 1.5rem;">
+            <!-- Timer & Score -->
+             <div style="text-align: right;">
+                <div id="timerDisplay" style="font-family: monospace; font-size: 1.5rem; font-weight: bold; color: #fbbf24; line-height: 1;">00:00</div>
+                <div style="font-size: 0.875rem; color: #94a3b8;">Score: <span id="currentScoreDisplay">0</span></div>
+            </div>
+
+            <button id="resetBtn" class="btn btn-secondary">Reset</button>
+        </div>
+    </div>
+
+    <div class="puzzle-grid">
+        <!-- Map Area -->
+        <div class="glass-panel" style="padding: 2rem; border-radius: 1rem; min-height: 500px;">
+            <div id="mapContainer" style="position: relative; width: 100%; height: auto; min-height: 500px; background: rgba(10, 25, 41, 0.5); border-radius: 0.5rem; overflow: hidden;">
+                <!-- Background Grid -->
+                <div style="position: absolute; inset: 0; width: 100%; height: 100%; display: grid; grid-template-columns: repeat(10, 1fr); grid-template-rows: repeat(10, 1fr); pointer-events: none; opacity: 0.2;">
+                    @for(int i = 0; i < 100; i++)
+                    {
+                        <div style="border: 1px solid #334155;"></div>
+                    }
+                </div>
+
+                <svg id="algoSvg" viewBox="0 0 800 600" style="position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: auto;"></svg>
+
+                <div id="resultOverlay" style="position: absolute; inset: 0; display: none; align-items: center; justify-content: center; pointer-events: none; z-index: 10;">
+                    <div style="background: rgba(15, 23, 42, 0.95); padding: 2.5rem; border-radius: 1rem; border: 1px solid #334155; text-align: center; backdrop-filter: blur(8px); min-width: 320px; box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.3);">
+                        <h2 style="font-size: 1.75rem; font-weight: bold; color: #60a5fa; margin-bottom: 1.5rem; display: flex; align-items: center; justify-content: center; gap: 0.75rem;">
+                            <span style="font-size: 2rem;">🎉</span> MST Complete!
+                        </h2>
+                        
+                        <div style="display: flex; flex-direction: column; gap: 0.75rem; margin-bottom: 2rem;">
+                            <div style="color: #cbd5e1; font-size: 1.1rem;">
+                                Total Weight: <span id="resultWeight" style="color: #f472b6; font-weight: bold;">0</span>
+                            </div>
+                            <div style="color: #cbd5e1; font-size: 1.1rem;">
+                                Time Taken: <span id="resultTime" style="color: #4ade80; font-weight: bold;">00:00</span>
+                            </div>
+                            <div style="color: #cbd5e1; font-size: 1.1rem;">
+                                Score: <span id="finalScore" style="color: #c084fc; font-weight: bold;">0</span>
+                            </div>
+                        </div>
+
+                        <button id="closeResultBtn" class="btn btn-primary" style="pointer-events: auto; padding: 0.5rem 2rem; border-radius: 9999px; background: #6366f1; border: none;">Close</button>
+                    </div>
+                </div>
+
+                <div id="overlayMessage" style="position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; pointer-events: none;">
+                    <div style="color: #94a3b8; font-size: 0.875rem; background: rgba(0,0,0,0.6); padding: 1rem; border-radius: 0.5rem;">
+                        Generate a graph to begin
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Controls -->
+        <div class="glass-panel" style="padding: 1.5rem; border-radius: 1rem; display: flex; flex-direction: column; gap: 1.5rem;">
+            
+            <!-- Input Section -->
+            <div id="inputSection">
+                <h3 style="font-size: 1.125rem; font-weight: 600; color: white; margin-bottom: 1rem;">Graph Generation</h3>
+                
+                <div style="display: flex; gap: 0.5rem; margin-bottom: 1rem;">
+                    <button id="tabRandom" class="btn btn-sm btn-primary" style="flex: 1;">Random</button>
+                    <button id="tabManual" class="btn btn-sm btn-secondary" style="flex: 1;">Manual</button>
+                </div>
+
+                <!-- Random Input -->
+                <div id="randomInputGroup">
+                    <label style="display: block; color: #94a3b8; font-size: 0.875rem; margin-bottom: 0.5rem;">Node Count (2-15)</label>
+                    <input type="number" id="nodeCountInput" value="6" min="2" max="15" class="form-control" style="width: 100%; background: #1e293b; border: 1px solid #334155; color: white; padding: 0.5rem; border-radius: 0.25rem; margin-bottom: 1rem;">
+                    <button id="generateRandomBtn" class="btn btn-primary" style="width: 100%;">Generate Random Graph</button>
+                </div>
+
+                <!-- Manual Input -->
+                <div id="manualInputGroup" style="display: none;">
+                    <label style="display: block; color: #94a3b8; font-size: 0.875rem; margin-bottom: 0.5rem;">Edges (Source-Target-Weight)</label>
+                    <textarea id="manualEdgeInput" rows="8" style="width: 100%; background: #1e293b; border: 1px solid #334155; color: white; padding: 0.5rem; border-radius: 0.25rem; margin-bottom: 1rem; font-family: monospace;">A-B-4
+A-H-8
+B-C-8
+B-H-11
+C-D-7
+C-F-4
+D-E-9
+D-F-14
+E-F-10
+F-G-2
+G-H-1
+G-I-6
+H-I-7</textarea>
+                    
+                    <label style="display: block; color: #94a3b8; font-size: 0.875rem; margin-bottom: 0.5rem;">Start Node (Optional)</label>
+                    <input type="text" id="manualStartNodeInput" placeholder="e.g. A" class="form-control" style="width: 100%; background: #1e293b; border: 1px solid #334155; color: white; padding: 0.5rem; border-radius: 0.25rem; margin-bottom: 1rem;">
+
+                    <button id="generateManualBtn" class="btn btn-primary" style="width: 100%;">Generate From Data</button>
+                </div>
+            </div>
+
+            <!-- Action Section (Hidden until graph exists) -->
+            <div id="actionSection" style="display: none; flex-direction: column; gap: 1rem;">
+                <h3 style="font-size: 1.125rem; font-weight: 600; color: white; margin-bottom: 0.5rem;">Controls</h3>
+                
+                <div style="margin-bottom: 0.5rem;">
+                    <label style="color: #94a3b8; font-size: 0.875rem; display: block; margin-bottom: 0.25rem;">Start Node:</label>
+                    <select id="startNodeSelect" class="form-control" style="width: 100%; background: #1e293b; border: 1px solid #334155; color: white; padding: 0.5rem; border-radius: 0.25rem;">
+                    </select>
+                </div>
+
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem;">
+                    <button id="solveBtn" class="btn btn-primary" style="background: linear-gradient(135deg, #10b981 0%, #3b82f6 100%);">
+                        Find MST (Auto)
+                    </button>
+                    <button id="manualSolveBtn" class="btn btn-secondary" style="border-color: #facc15; color: #facc15;">
+                        Manual Solve
+                    </button>
+                </div>
+
+                 <div id="stepControls" style="display: none; gap: 0.5rem; justify-content: center; margin-top: 0.5rem;">
+                     <button id="prevBtn" class="btn btn-sm btn-secondary" style="padding: 0.25rem 0.75rem;">&lt;</button>
+                     <button id="pauseBtn" class="btn btn-sm btn-secondary" style="padding: 0.25rem 0.75rem;">||</button>
+                     <button id="nextBtn" class="btn btn-sm btn-secondary" style="padding: 0.25rem 0.75rem;">&gt;</button>
+                 </div>
+            </div>
+
+            <!-- Log/Guide -->
+            <div style="border-top: 1px solid rgba(255, 255, 255, 0.1); padding-top: 1rem;">
+                 <h3 style="font-size: 1.125rem; font-weight: 600; color: white; margin-bottom: 0.75rem;">Status</h3>
+                 <div id="statusText" style="margin-bottom: 1rem; font-size: 0.875rem; color: #cbd5e1; min-height: 3rem; background: rgba(0,0,0,0.2); padding: 0.5rem; border-radius: 0.5rem;">
+                     Ready to generate graph.
+                 </div>
+            </div>
+            
+            <div style="display: flex; justify-content: space-between; font-size: 0.75rem; color: #64748b;">
+                <span>Total Nodes: <span id="nodeCountDisplay">0</span></span>
+                <span>Total Edges: <span id="edgeCountDisplay">0</span></span>
+            </div>
+
+            <!-- Algorithm Info -->
+            <div style="border-top: 1px solid rgba(255, 255, 255, 0.1); padding-top: 1.5rem; margin-top: 1rem;">
+                
+                <h3 style="font-size: 1.125rem; font-weight: bold; color: white; margin-bottom: 1rem;">Complexity Analysis</h3>
+                
+                <div style="margin-bottom: 1rem;">
+                    <p style="color: #94a3b8; font-size: 0.75rem; margin-bottom: 0.25rem;">Time Complexity:</p>
+                    <div style="background: rgba(139, 92, 246, 0.2); border: 1px solid rgba(139, 92, 246, 0.5); color: #c4b5fd; padding: 0.25rem 0.75rem; border-radius: 0.375rem; display: inline-block; font-family: monospace; font-size: 0.875rem;">
+                        O(E log V)
+                    </div>
+                </div>
+
+                <div style="margin-bottom: 1.5rem;">
+                    <p style="color: #94a3b8; font-size: 0.75rem; margin-bottom: 0.25rem;">Space Complexity:</p>
+                    <div style="background: rgba(239, 68, 68, 0.2); border: 1px solid rgba(239, 68, 68, 0.5); color: #fca5a5; padding: 0.25rem 0.75rem; border-radius: 0.375rem; display: inline-block; font-family: monospace; font-size: 0.875rem;">
+                        O(V + E)
+                    </div>
+                </div>
+
+                <h3 style="font-size: 1.125rem; font-weight: bold; color: white; margin-bottom: 0.5rem;">How it works</h3>
+                <p style="color: #94a3b8; font-size: 0.875rem; margin-bottom: 1rem; line-height: 1.5;">
+                    Prim's algorithm builds the MST by growing from a starting node, always adding the cheapest edge that connects a visited node to an unvisited one.
+                </p>
+
+                <div style="background: #0f172a; padding: 1rem; border-radius: 0.5rem; border: 1px solid #1e293b; font-family: 'Consolas', 'Monaco', monospace; font-size: 0.8rem; color: #4ade80; line-height: 1.5;">
+                    <span style="color: #22d3ee;">function</span> Prim(V, E):<br>
+                    &nbsp;&nbsp;visited = {start}<br>
+                    &nbsp;&nbsp;pq = edges(start)<br>
+                    &nbsp;&nbsp;mst = []<br>
+                    <br>
+                    &nbsp;&nbsp;<span style="color: #f472b6;">while</span> visited.size < V:<br>
+                    &nbsp;&nbsp;&nbsp;&nbsp;(u, v) = pq.pop_min()<br>
+                    &nbsp;&nbsp;&nbsp;&nbsp;<span style="color: #f472b6;">if</span> v <span style="color: #f472b6;">not in</span> visited:<br>
+                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;visited.add(v)<br>
+                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;mst.add((u, v))<br>
+                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;pq.add(edges(v))<br>
+                    <br>
+                    &nbsp;&nbsp;<span style="color: #f472b6;">return</span> mst
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="~/js/prim.js"></script>
+}

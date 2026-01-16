@@ -1,0 +1,124 @@
+@{
+    ViewData["Title"] = "Graph Coloring";
+}
+
+<div class="space-y-6 animate-fade-in-up">
+    <!-- Header -->
+    <div class="glass-panel algo-header">
+        <div class="header-left">
+            <h1 style="font-size: 1.875rem; font-weight: bold; background: linear-gradient(135deg, #fb923c 0%, #dc2626 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 0.25rem;">
+                Graph Coloring
+            </h1>
+            <p style="color: #64748b; font-size: 0.875rem;">Greedy Coloring Algorithm</p>
+        </div>
+        <div class="header-right">
+             <div style="display: flex; flex-direction: column; align-items: end; margin-right: 1rem;">
+                <span id="timerDisplay" style="font-family: monospace; font-size: 1.25rem; color: #facc15; font-weight: bold;">00:00</span>
+                <span id="scoreDisplay" style="font-size: 0.875rem; color: #94a3b8;">Score: 0</span>
+            </div>
+            <button id="hintBtn" class="btn btn-secondary" style="border-color: #facc15; color: #facc15;">
+                <span style="margin-right: 0.5rem">💡</span>Hint
+            </button>
+            <button id="resetBtn" class="btn btn-secondary">Reset</button>
+            <button id="newGraphBtn" class="btn btn-secondary">New Graph</button>
+            <button id="solveBtn" class="btn btn-primary" style="background: linear-gradient(135deg, #f97316 0%, #dc2626 100%);">Auto Color</button>
+        </div>
+    </div>
+
+    <div class="puzzle-grid">
+        <!-- Graph Visualization -->
+        <div class="glass-panel" style="padding: 2rem; border-radius: 1rem; min-height: 500px;">
+            <svg id="graphSvg" style="width: 100%; height: auto; min-height: 500px; background: rgba(10, 25, 41, 0.5); border-radius: 0.5rem;"></svg>
+        </div>
+
+        <!-- Control Panel -->
+        <div class="glass-panel" style="padding: 1.5rem; border-radius: 1rem; display: flex; flex-direction: column; gap: 1.5rem;">
+            <div>
+                <div id="resultOverlay" style="position: absolute; inset: 0; display: none; align-items: center; justify-content: center; pointer-events: none; z-index: 10;">
+                    <div style="background: rgba(15, 23, 42, 0.9); padding: 1.5rem; border-radius: 1rem; border: 1px solid #dc2626; text-align: center; backdrop-filter: blur(4px);">
+                        <h2 style="font-size: 1.5rem; font-weight: bold; color: #f87171; margin-bottom: 0.5rem;">Graph Colored!</h2>
+                        <p style="color: #cbd5e1; font-size: 1.125rem; margin-bottom: 1rem;">Colors Used: <span id="resultChromaticValue" style="color: #fb923c; font-weight: bold;">0</span></p>
+                        <p style="color: #94a3b8; font-size: 0.875rem; margin-bottom: 1rem;">Score: <span id="resultScoreValue">0</span></p>
+                        <button id="closeResultBtn" class="btn btn-sm btn-primary" style="pointer-events: auto;">Close</button>
+                    </div>
+                </div>
+                <h3 style="font-size: 1.125rem; font-weight: 600; color: white; margin-bottom: 1rem;">Color Palette</h3>
+                <div id="colorPalette" style="display: flex; gap: 0.5rem; flex-wrap: wrap; margin-bottom: 0.75rem;">
+                    <div class="color-swatch" data-color="0" style="width: 2.5rem; height: 2.5rem; border-radius: 50%; background: #3b82f6; border: 2px solid rgba(255,255,255,0.2); cursor: pointer; transition: transform 0.2s;"></div>
+                    <div class="color-swatch" data-color="1" style="width: 2.5rem; height: 2.5rem; border-radius: 50%; background: #ef4444; border: 2px solid rgba(255,255,255,0.2); cursor: pointer; transition: transform 0.2s;"></div>
+                    <div class="color-swatch" data-color="2" style="width: 2.5rem; height: 2.5rem; border-radius: 50%; background: #10b981; border: 2px solid rgba(255,255,255,0.2); cursor: pointer; transition: transform 0.2s;"></div>
+                    <div class="color-swatch" data-color="3" style="width: 2.5rem; height: 2.5rem; border-radius: 50%; background: #8b5cf6; border: 2px solid rgba(255,255,255,0.2); cursor: pointer; transition: transform 0.2s;"></div>
+                    <div class="color-swatch" data-color="4" style="width: 2.5rem; height: 2.5rem; border-radius: 50%; background: #ec4899; border: 2px solid rgba(255,255,255,0.2); cursor: pointer; transition: transform 0.2s;"></div>
+                </div>
+                <p style="font-size: 0.75rem; color: #64748b;">Select a color then click a node.</p>
+            </div>
+
+            <div style="border-top: 1px solid rgba(255, 255, 255, 0.1); padding-top: 1rem;">
+                 <h3 style="font-size: 1.125rem; font-weight: 600; color: white; margin-bottom: 0.75rem;">Step-by-Step Guide</h3>
+                 <div id="explanationText" style="margin-bottom: 1rem; font-size: 0.875rem; color: #cbd5e1; min-height: 3rem; background: rgba(0,0,0,0.2); padding: 0.5rem; border-radius: 0.5rem;">
+                     Generate a graph and start coloring nodes such that no two adjacent nodes have the same color.
+                 </div>
+                 <div id="stepControls" style="display: none; gap: 0.5rem; justify-content: center;">
+                     <button id="prevStepBtn" class="btn btn-sm btn-secondary" style="padding: 0.25rem 0.75rem;">&larr;</button>
+                     <button id="pauseBtn" class="btn btn-sm btn-secondary" style="padding: 0.25rem 0.75rem;">||</button>
+                     <button id="nextStepBtn" class="btn btn-sm btn-secondary" style="padding: 0.25rem 0.75rem;">&rarr;</button>
+                 </div>
+            </div>
+
+            <div>
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem; font-size: 0.875rem; color: #94a3b8;">
+                    <span>Chromatic Number Used:</span>
+                    <span id="chromaticNumber" style="color: #fb923c; font-weight: 600;">0</span>
+                </div>
+                <div style="display: flex; justify-content: space-between; align-items: center; font-size: 0.875rem; color: #94a3b8; margin-bottom: 1.5rem;">
+                    <span>Conflicts:</span>
+                    <span id="conflicts" style="color: #4ade80; font-weight: 600;">0</span>
+                </div>
+
+                <div style="border-top: 1px solid rgba(255, 255, 255, 0.1); padding-top: 1rem;">
+                    <h3 style="font-size: 1.125rem; font-weight: 600; color: white; margin-bottom: 0.75rem;">How it works</h3>
+                    <p style="font-size: 0.875rem; color: #94a3b8; line-height: 1.6; margin-bottom: 1.5rem;">
+                        Graph Coloring assigns colors to vertices such that no two adjacent vertices share the same color. This implementation uses <span style="color: #a78bfa; font-weight: 600;">Backtracking</span> to try assigning colors one by one, backtracking if a valid assignment isn't possible.
+                    </p>
+
+                    <h3 style="font-size: 1.125rem; font-weight: 600; color: white; margin-bottom: 1rem;">Complexity Analysis</h3>
+                    
+                    <div style="margin-bottom: 1.5rem;">
+                        <div style="margin-bottom: 1rem;">
+                            <p style="color: #94a3b8; font-size: 0.875rem; margin-bottom: 0.5rem;">Time Complexity:</p>
+                            <div style="display: inline-block; background: rgba(139, 92, 246, 0.2); border: 1px solid rgba(139, 92, 246, 0.5); color: #e9d5ff; padding: 0.5rem 1rem; border-radius: 0.5rem; font-family: monospace; font-weight: 600; letter-spacing: 0.05em;">
+                                O(Mᵛ)
+                            </div>
+                        </div>
+                        
+                        <div style="margin-bottom: 1rem;">
+                            <p style="color: #94a3b8; font-size: 0.875rem; margin-bottom: 0.5rem;">Space Complexity:</p>
+                            <div style="display: inline-block; background: rgba(244, 63, 94, 0.2); border: 1px solid rgba(244, 63, 94, 0.5); color: #fecdd3; padding: 0.5rem 1rem; border-radius: 0.5rem; font-family: monospace; font-weight: 600; letter-spacing: 0.05em;">
+                                O(V)
+                            </div>
+                        </div>
+                    </div>
+
+                    <div style="background: rgba(0, 0, 0, 0.3); padding: 1rem; border-radius: 0.5rem; font-family: 'Courier New', monospace; font-size: 0.8rem; color: #34d399; line-height: 1.6; border: 1px solid rgba(52, 211, 153, 0.2);">
+                        function solve(node):<br/>
+                        &nbsp;&nbsp;if node == V:<br/>
+                        &nbsp;&nbsp;&nbsp;&nbsp;return true // All colored<br/>
+                        <br/>
+                        &nbsp;&nbsp;for color in 1 to M:<br/>
+                        &nbsp;&nbsp;&nbsp;&nbsp;if isSafe(node, color):<br/>
+                        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;color[node] = color<br/>
+                        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;if solve(node + 1):<br/>
+                        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;return true<br/>
+                        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;color[node] = 0 // BACKTRACK<br/>
+                        <br/>
+                        &nbsp;&nbsp;return false
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="~/js/graphcoloring.js"></script>
+}
