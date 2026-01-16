@@ -25,7 +25,7 @@ namespace AlgoPuzzleBoard.MVC.Controllers
 
     public class ChatRequest
     {
-        public string Message { get; set; }
-        public string CurrentContext { get; set; }
+        public string Message { get; set; } = string.Empty;
+        public string CurrentContext { get; set; } = string.Empty;
     }
 }
